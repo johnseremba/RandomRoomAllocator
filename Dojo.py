@@ -27,6 +27,21 @@ class Dojo:
                     return False
         return True
 
+    def add_person(self, person_name, person_type, wants_accomodation="N"):
+        if person_type == "Staff":
+            new_person = Staff(person_name, dojo.all_rooms)
+            self.all_people.append(new_person)
+            return
+        else:
+            if wants_accomodation == "Y":
+                opt_in = True
+            else:
+                opt_in = False
+
+            new_person = Fellow(person_name, opt_in, dojo.all_rooms)
+            self.all_people.append(new_person)
+            return
+
     @staticmethod
     def print_room(room_name):
         my_room = [room for room in dojo.all_rooms if room.room_name == room_name]
@@ -51,20 +66,9 @@ class Dojo:
                 print("-------------------")
                 print(', '.join(room.occupants))
 
-    def add_person(self, person_name, person_type, wants_accomodation="N"):
-        if person_type == "Staff":
-            new_person = Staff(person_name, dojo.all_rooms)
-            self.all_people.append(new_person)
-            return
-        else:
-            if wants_accomodation == "Y":
-                opt_in = True
-            else:
-                opt_in = False
-
-            new_person = Fellow(person_name, opt_in, dojo.all_rooms)
-            self.all_people.append(new_person)
-            return
+    @staticmethod
+    def print_unallocated():
+        print("Dtuff")
 
 dojo = Dojo()
 dojo.create_room("office", "Purple", "Black", "Brown")
