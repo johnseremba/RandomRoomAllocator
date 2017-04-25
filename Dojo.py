@@ -1,16 +1,6 @@
-"""Greeter.
-
-Usage:
- Dojo.py create_room <room_type> <room_name> ...
- Dojo.py (-h | --help)
-
-Options:
- -h --help     Show this screen.
-
-"""
-
 from RandomRoomAllocator.Room import *
 from RandomRoomAllocator.Person import *
+
 
 class Dojo:
     def __init__(self):
@@ -19,44 +9,40 @@ class Dojo:
         self.all_people = []
 
     def create_room(self, room_type, *room_name):
-        """
-        Creates a new room basing on the room type, returns true if created successfully and false otherwise
-        :param room_type: string
-        :param room_name: string
-        :return: True/False
-        """
+        """Usage: create_room <room_type> <room_name>..."""
+        rooms_list = list(room_name)
         if room_type == "office":
-            for room in room_name:
-                new_office = Office(room_name)
+            for room in rooms_list:
+                new_office = Office(room)
                 if new_office:
                     self.all_rooms.append(new_office)
                 else:
                     return False
             return True
         else:
-            for room in room_name:
-                new_livin_space = LivingSpace(room_name)
-                if new_livin_space:
-                    self.all_rooms.append(new_livin_space)
+            for room in rooms_list:
+                new_living_space = LivingSpace(room)
+                if new_living_space:
+                    self.all_rooms.append(new_living_space)
                 else:
                     return False
             return True
 
-    def add_person(self, person_name, person_type):
+    def add_person(self, person_name, person_type, wants_accomodation = "N"):
         if person_type == "Staff":
-            return Staff(person_name)
+            return Staff(person_name, dojo.all_rooms)
         else:
-            return Fellow(person_name)
+            if wants_accomodation == "Y":
+                opt_in = True
+            else:
+                opt_in = False
 
-# if __name__ == '__main__':
-#    arguments = docopt(__doc__)
+            return Fellow(person_name, opt_in, dojo.all_rooms)
 
-my_dojo = Dojo()
-my_office = my_dojo.create_room("office", "Blue")
-my_living = my_dojo.create_room("living", "Yellow")
-my_person1 = my_dojo.create_person("Serry", "Fellow")
-my_person2 = my_dojo.create_person("Johnz", "Staff")
+dojo = Dojo()
+dojo.create_room("office", "Purple", "Black", "Brown")
+dojo.create_room("living space", "Yellow", "Orange", "Pink")
+dojo.add_person("Neil Armstrong", "Staff")
 
-print(my_person1)
-print(my_person2)
-#print(my_living.LivingSpace)
+# print(dojo.all_rooms[0].room_name)
+# print(len(dojo.all_rooms))
