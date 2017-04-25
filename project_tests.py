@@ -1,6 +1,6 @@
 import unittest
-from RandomRoomAllocator import Dojo
-
+from RandomRoomAllocator.Dojo import Dojo
+from RandomRoomAllocator.Person import *
 
 class TestCreateRoom (unittest.TestCase):
     def setUp(self):
@@ -36,21 +36,45 @@ class TestAllocateRoom(unittest.TestCase):
         self.offices = self.my_dojo.create_room("office", "Purple", "Black", "Brown")
         self.living_space = self.my_dojo.create_room("office", "Yellow", "Orange", "Pink")
 
-    def test_add_person(self):
+    def test_add_person_staff(self):
         self.my_dojo.add_person("Neil Armstrong", "Staff")
+        all_people = len(self.my_dojo.all_people)
+        self.assertEqual(all_people, 1, msg="all_people should be equal to 1")
+
+        staff_list = [staff for staff in self.my_dojo.all_people if isinstance(staff, Staff)]
+        office_list = [office for office in self.my_dojo.all_rooms if isinstance(office, Office)]
+        allocated = False
+        for office_list in staff_list:
+            for occupant in office_list.occupants:
+                if occupant.person_name == staff_list[0].person_name:
+                    allocated = True
+                    break
+        self.assertTrue(allocated, msg="Staff member should be assigned an office")
+
+    def test_add_person_fellow(self):
         self.my_dojo.add_person("Nelly Armweek", "Fellow", "Y")
         self.my_dojo.add_person("Johnson Jones", "Fellow")
         all_people = len(self.my_dojo.all_people)
         self.assertEqual(all_people, 3, msg="all_people should be equal to 3")
-        for person in self.my_dojo.all_people:
-            if person is self.my_dojo.Staff:
-                person.assertTrue(person.Office, msg="Staff member should be assigned an office")
-                person.assertFalse(person.LivingSpace, msg="Staff member shoulld not have a living space")
-                continue
-            if person is self.my_dojo.Fellow:
-                person.assertTrue(person.Office, msg="Fellow should be assigned an office")
-                if person.wants_accomodation:
-                    person.assertTrue(person.LivingSpace,
-                                      msg="Fellow wants a room. Therefore he/she must be assigned a living space")
-                else:
-                    person.assertFalse(person.LivingSpace, msg="Fellow should not be assigned a living space.")
+        fellow_list = [fellow for fellow in self.my_dojo.all_people if isinstance(fellow, Fellow)]
+        office_list = [office for office in self.my_dojo.all_rooms if isinstance(office, Office)]
+        allocated = False
+        for office_list in fellow_list:
+            for occupant in office_list.occupants:
+                if occupant.person_name == fellow_list[0].person_name:
+                    allocated = True
+                    break
+        self.assertTrue(allocated, msg="Fellow member should be assigned an office")
+
+        # for person in self.my_dojo.all_people:
+        #     if person is self.my_dojo.Fellow:
+        #         person.assertTrue(person.Office, msg="Fellow should be assigned an office")
+        #         if person.wants_accomodation:
+        #             person.assertTrue(person.LivingSpace,
+        #                               msg="Fellow wants a room. Therefore he/she must be assigned a living space")
+        #         else:
+        #             person.assertFalse(person.LivingSpace, msg="Fellow should not be assigned a living space.")
+
+
+if __name__ == '__main__':
+    unittest.main()
