@@ -28,8 +28,8 @@ class Dojo:
         return True
 
     def add_person(self, person_name, person_type, wants_accommodation="N"):
-
-        if person_type == "Staff":
+        person_type = person_type.lower()
+        if person_type == "staff":
             for j in range(len([x for x in dojo.all_people if isinstance(x, Staff)]), 500):
                 new_id = "ST" + str(j + 1)
                 if new_id not in [person.person_id for person in dojo.all_people]:
@@ -37,7 +37,7 @@ class Dojo:
             new_person = Staff(person_name, dojo.all_rooms, new_id)
             self.all_people.append(new_person)
             return
-        else:
+        elif person_type == "fellow":
             if wants_accommodation == "Y":
                 opt_in = True
             else:
@@ -49,6 +49,8 @@ class Dojo:
             new_person = Fellow(person_name, opt_in, dojo.all_rooms, new_id)
             self.all_people.append(new_person)
             return
+        else:
+            print("Invalid person type")
 
     @staticmethod
     def print_room(room_name):
@@ -99,15 +101,20 @@ class Dojo:
                                               - set(allocated_fellow_living_space))
         print("Unallocated staff members")
         print("-------------------------")
-        print(', '.join(unallocated_staff))
+        dojo.print_person_list(unallocated_staff)
 
         print("Fellows without Office Space")
         print("-------------------------")
-        print(', '.join(unallocated_fellow_office))
+        dojo.print_person_list(unallocated_fellow_office)
 
         print("Fellows without Living Space")
         print("-------------------------")
-        print(', '.join(unallocated_fellow_living_space))
+        dojo.print_person_list(unallocated_fellow_living_space)
+
+    @staticmethod
+    def print_person_list(my_list):
+        for person in my_list:
+            print(person.person_name)
 
     @staticmethod
     def reallocate_person(person_identifier, room_name):
@@ -124,32 +131,40 @@ class Dojo:
         except:
             print("Error! Person or Room not found!")
 
-    def load_people(self):
+    @staticmethod
+    def load_people():
         my_file = open("person_data.txt")
         line = my_file.readline()
         while line:
-            print(line)
+            data_row = line.split()
+            last_param = data_row[-1]
+            person_name = ' '.join(data_row[0:2])
+            wants_accommodation = "F"
+            if len(last_param) == 1:
+                wants_accommodation = data_row[-1]
+                person_type = data_row[-2]
+            else:
+                wants_accommodation = "F"
+                person_type = data_row[-1]
+            dojo.add_person(person_name, person_type, wants_accommodation)
             line = my_file.readline()
         my_file.close()
 
-        
-
-
 dojo = Dojo()
+dojo.create_room("office", "Purple", "Black", "Brown")
+dojo.create_room("living space", "Yellow", "Orange", "Pink")
+dojo.add_person("Neil Armstrong", "Staff")
+dojo.add_person("Neilee Armstrong", "Staff")
+dojo.add_person("Neilxx Armstrong", "Fellow")
+dojo.add_person("Neilww Armstrong", "Staff")
+dojo.add_person("Johnson Jones", "Fellow", "Y")
 dojo.load_people()
-# dojo.create_room("office", "Purple", "Black", "Brown")
-# dojo.create_room("living space", "Yellow", "Orange", "Pink")
-# dojo.add_person("Neil Armstrong", "Staff")
-# dojo.add_person("Neilee Armstrong", "Staff")
-# dojo.add_person("Neilxx Armstrong", "Fellow")
-# dojo.add_person("Neilww Armstrong", "Staff")
-# dojo.add_person("Johnson Jones", "Fellow", "Y")
-# print(len(dojo.all_people))
-# for person in dojo.all_people:
-#     print(person.person_id, person.person_name)
-# for room in dojo.all_rooms:
-#     print(room.room_name, len(room.occupants))
-# dojo.print_allocations()
-# dojo.print_unallocated()
-# dojo.print_room("Purple")
+print(len(dojo.all_people))
+for person in dojo.all_people:
+    print(person.person_id, person.person_name)
+for room in dojo.all_rooms:
+    print(room.room_name, len(room.occupants))
+dojo.print_allocations()
+dojo.print_unallocated()
+dojo.print_room("Purple")
 
