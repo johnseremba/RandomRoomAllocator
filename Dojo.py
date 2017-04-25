@@ -28,7 +28,7 @@ class Dojo:
                     return False
             return True
 
-    def add_person(self, person_name, person_type, wants_accomodation = "N"):
+    def add_person(self, person_name, person_type, wants_accomodation="N"):
         if person_type == "Staff":
             return Staff(person_name, dojo.all_rooms)
         else:
@@ -43,6 +43,7 @@ dojo = Dojo()
 dojo.create_room("office", "Purple", "Black", "Brown")
 dojo.create_room("living space", "Yellow", "Orange", "Pink")
 dojo.add_person("Neil Armstrong", "Staff")
+dojo.add_person("Neil Armstrong", "Fellow", "Y")
 
 # print(dojo.all_rooms[0].room_name)
 # print(len(dojo.all_rooms))
