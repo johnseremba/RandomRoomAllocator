@@ -27,7 +27,8 @@ class Dojo:
                     return False
         return True
 
-    def print_room(self, room_name):
+    @staticmethod
+    def print_room(room_name):
         my_room = [room for room in dojo.all_rooms if room.room_name == room_name]
         occupants = my_room.occupants
         if len(occupants) < 1:
@@ -38,6 +39,17 @@ class Dojo:
             print("----------------------------------")
             for occupant in occupants:
                 print(occupant.person_name)
+
+    @staticmethod
+    def print_allocations():
+        if len(dojo.all_rooms) < 1:
+            print("No rooms registered")
+            return
+        else:
+            for room in dojo.all_rooms:
+                print(room.room_name)
+                print("-------------------")
+                print(', '.join(room.occupants))
 
     def add_person(self, person_name, person_type, wants_accomodation="N"):
         if person_type == "Staff":
