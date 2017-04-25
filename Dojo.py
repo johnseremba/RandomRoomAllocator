@@ -43,7 +43,7 @@ dojo = Dojo()
 dojo.create_room("office", "Purple", "Black", "Brown")
 dojo.create_room("living space", "Yellow", "Orange", "Pink")
 dojo.add_person("Neil Armstrong", "Staff")
-dojo.add_person("Neil Armstrong", "Fellow", "Y")
+dojo.add_person("Johnson Jones", "Fellow", "Y")
 
 # print(dojo.all_rooms[0].room_name)
 # print(len(dojo.all_rooms))
