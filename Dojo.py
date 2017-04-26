@@ -241,7 +241,7 @@ class Dojo:
                 print("Invalid room type")
 
             # Load room occupants
-            c.execute('SELECT * FROM occupant WHERE room_name=?', 'Purple')
+            c.execute('SELECT * FROM occupant WHERE room_name=?', [room_name])
             my_occupants = c.fetchall()
             for occupant in my_occupants:
                 person_id = occupant[0]
@@ -260,13 +260,13 @@ dojo.load_state()
 # dojo.add_person("Neilww Armstrong", "Staff")
 # dojo.add_person("Johnson Jones", "Fellow", "Y")
 # # dojo.load_people()
-# print(len(dojo.all_people))
-#
-# for person in dojo.all_people:
-#     print(person.person_id, person.person_name)
-# for room in dojo.all_rooms:
-#     print(room.room_name, len(room.occupants))
-# dojo.print_allocations()
-# dojo.print_unallocated()
-# dojo.print_room("Purple")
+print(len(dojo.all_people))
+
+for person in dojo.all_people:
+    print(person.person_id, person.person_name)
+for room in dojo.all_rooms:
+    print(room.room_name, len(room.occupants))
+dojo.print_allocations()
+dojo.print_unallocated()
+dojo.print_room("Purple")
 # dojo.save_state()
