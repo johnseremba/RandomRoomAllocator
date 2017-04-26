@@ -1,6 +1,6 @@
 from RandomRoomAllocator.Room import *
 from RandomRoomAllocator.Person import *
-
+import sqlite3
 
 class Dojo:
     def __init__(self):
@@ -150,6 +150,18 @@ class Dojo:
             line = my_file.readline()
         my_file.close()
 
+    @staticmethod
+    def save_state():
+        conn = sqlite3.connect('dojo.db')
+        c = conn.cursor()
+        print("Database opened successfully")
+        c.execute('''CREATE TABLE person
+        (person_id TEXT PRIMARY KEY NOT NULL,
+        person_name TEXT NOT NULL        
+        )''')
+
+        conn.close()
+
 dojo = Dojo()
 dojo.create_room("office", "Purple", "Black", "Brown")
 dojo.create_room("living space", "Yellow", "Orange", "Pink")
@@ -167,4 +179,4 @@ for room in dojo.all_rooms:
 dojo.print_allocations()
 dojo.print_unallocated()
 dojo.print_room("Purple")
-
+dojo.save_state()
