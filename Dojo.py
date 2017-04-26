@@ -155,23 +155,67 @@ class Dojo:
         conn = sqlite3.connect('dojo.db')
         c = conn.cursor()
         print("Database opened successfully")
-        c.execute('''CREATE TABLE person
+
+        # Create Person Table
+        c.execute('''CREATE TABLE IF NOT EXISTS person
         (person_id TEXT PRIMARY KEY NOT NULL,
-        person_name TEXT NOT NULL        
+        person_name TEXT NOT NULL,
+        person_type TEXT NOT NULL,
+        opt_int INT     
         )''')
 
+        # Create room Table
+        c.execute('''CREATE TABLE IF NOT EXISTS room
+                (room_name TEXT PRIMARY KEY NOT NULL,
+                room_type TEXT NOT NULL,
+                max_occupants TEXT NOT NULL
+                )''')
+
+        # Create Occupant Table
+        c.execute('''CREATE TABLE IF NOT EXISTS occupant
+                (person_id TEXT NOT NULL,
+                room_name TEXT NOT NULL   
+                )''')
+
+        # Save Persons Data
+        for person in dojo.all_people:
+            opt_in = 0
+            if isinstance(person, Staff):
+                person_type = "staff"
+            else:
+                person_type = "fellow"
+                opt_in = int(person.opt_in)
+            data_list = [person.person_id, person.person_name, person_type, opt_in]
+            c.execute('INSERT OR REPLACE INTO person VALUES (?, ?, ?, ?)', data_list)
+
+        # Save Room Data
+        c.execute('DELETE FROM occupant')
+        for room in dojo.all_rooms:
+            if isinstance(room, Office):
+                room_type = "office"
+            else:
+                room_type = "living_space"
+            data_list = [room.room_name, room_type, room.max_occupants]
+            c.execute('INSERT OR REPLACE INTO room VALUES (?, ?, ?)', data_list)
+            # Save Occupants Data
+            for occupant in room.occupants:
+                data_list = [occupant.person_id, room.room_name]
+                c.execute('INSERT INTO occupant VALUES (?, ?)', data_list)
+
+        conn.commit()
         conn.close()
 
 dojo = Dojo()
-dojo.create_room("office", "Purple", "Black", "Brown")
-dojo.create_room("living space", "Yellow", "Orange", "Pink")
-dojo.add_person("Neil Armstrong", "Staff")
-dojo.add_person("Neilee Armstrong", "Staff")
-dojo.add_person("Neilxx Armstrong", "Fellow")
-dojo.add_person("Neilww Armstrong", "Staff")
-dojo.add_person("Johnson Jones", "Fellow", "Y")
-dojo.load_people()
-print(len(dojo.all_people))
+# dojo.create_room("office", "Purple", "Black", "Brown")
+# dojo.create_room("living space", "Yellow", "Orange", "Pink")
+# dojo.add_person("Neil Armstrong", "Staff")
+# dojo.add_person("Neilee Armstrong", "Staff")
+# dojo.add_person("Neilxx Armstrong", "Fellow")
+# dojo.add_person("Neilww Armstrong", "Staff")
+# dojo.add_person("Johnson Jones", "Fellow", "Y")
+# dojo.load_people()
+# print(len(dojo.all_people))
+
 for person in dojo.all_people:
     print(person.person_id, person.person_name)
 for room in dojo.all_rooms:
