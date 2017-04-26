@@ -25,11 +25,6 @@ class Staff(Person):
         self.person_name = person_name
         self.person_id = person_id
         print("Staff %s has been successfully added." % self.person_name)
-        self.allocate_office(self.person_name, rooms_list)
-
-    def generate_id(self):
-
-        self.person_id = "ST" + (randint(0, 100))
 
 
 class Fellow(Person):
@@ -38,9 +33,6 @@ class Fellow(Person):
         self.opt_in = opt_in
         self.person_id = person_id
         print("Fellow %s has been successfully added." % self.person_name)
-        self.allocate_office(self.person_name, rooms_list)
-        if opt_in:
-            self.allocate_living_space(self.person_name, rooms_list)
 
     def allocate_living_space(self, person_name, rooms_list):
         available_living_spaces = [room for room in rooms_list

@@ -35,6 +35,7 @@ class Dojo:
                 if new_id not in [person.person_id for person in dojo.all_people]:
                     break
             new_person = Staff(person_name, dojo.all_rooms, new_id)
+            new_person.allocate_office(new_person.person_name, dojo.all_rooms)
             self.all_people.append(new_person)
             return
         elif person_type == "fellow":
@@ -47,14 +48,16 @@ class Dojo:
                 if new_id not in [person.person_id for person in dojo.all_people]:
                     break
             new_person = Fellow(person_name, opt_in, dojo.all_rooms, new_id)
+            new_person.allocate_office(new_person.person_name, dojo.all_rooms)
+            if opt_in:
+                new_person.allocate_living_space(new_person.person_name, dojo.all_rooms)
             self.all_people.append(new_person)
             return
         else:
             print("Invalid person type")
 
-    @staticmethod
-    def print_room(room_name):
-        my_room = [room for room in dojo.all_rooms if room.room_name == room_name][0]
+    def print_room(self, room_name):
+        my_room = [room for room in self.all_rooms if room.room_name == room_name][0]
         print(my_room.room_name)
         occupants = my_room.occupants
         if len(occupants) < 1:
@@ -66,21 +69,19 @@ class Dojo:
             for occupant in occupants:
                 print(occupant.person_name)
 
-    @staticmethod
-    def print_allocations():
-        if len(dojo.all_rooms) < 1:
+    def print_allocations(self):
+        if len(self.all_rooms) < 1:
             print("No rooms registered")
             return
         else:
-            for my_room in dojo.all_rooms:
+            for my_room in self.all_rooms:
                 print("-------------------")
                 print(my_room.room_name)
                 print("-------------------")
                 for occupant in my_room.occupants:
                     print(occupant.person_name)
 
-    @staticmethod
-    def print_unallocated():
+    def print_unallocated(self):
         allocated_staff = []
         allocated_fellow_office = []
         allocated_fellow_living_space = []
@@ -92,36 +93,35 @@ class Dojo:
             allocated_fellow_living_space += [occupant for occupant in room.occupants
                                               if isinstance(occupant, Fellow) and isinstance(room, LivingSpace)
                                               and occupant.opt_in is True]
-        unallocated_staff = list(set([person for person in dojo.all_people if isinstance(person, Staff)])
+        unallocated_staff = list(set([person for person in self.all_people if isinstance(person, Staff)])
                                  - set(allocated_staff))
-        unallocated_fellow_office = list(set([person for person in dojo.all_people if isinstance(person, Fellow)])
+        unallocated_fellow_office = list(set([person for person in self.all_people if isinstance(person, Fellow)])
                                          - set(allocated_fellow_office))
-        unallocated_fellow_living_space = list(set([person for person in dojo.all_people
+        unallocated_fellow_living_space = list(set([person for person in self.all_people
                                                    if isinstance(person, Fellow) and person.opt_in is True])
-                                              - set(allocated_fellow_living_space))
+                                               - set(allocated_fellow_living_space))
         print("Unallocated staff members")
         print("-------------------------")
-        dojo.print_person_list(unallocated_staff)
+        self.print_person_list(unallocated_staff)
 
         print("Fellows without Office Space")
         print("-------------------------")
-        dojo.print_person_list(unallocated_fellow_office)
+        self.print_person_list(unallocated_fellow_office)
 
         print("Fellows without Living Space")
         print("-------------------------")
-        dojo.print_person_list(unallocated_fellow_living_space)
+        self.print_person_list(unallocated_fellow_living_space)
 
     @staticmethod
     def print_person_list(my_list):
         for person in my_list:
             print(person.person_name)
 
-    @staticmethod
-    def reallocate_person(person_identifier, room_name):
+    def reallocate_person(self, person_identifier, room_name):
         try:
-            new_room = [room for room in dojo.all_rooms if room.room_name == room_name][0]
-            person = [person for person in dojo.all_people if person.person_id == person_identifier][0]
-            prev_room = [room for room in dojo.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
+            new_room = [room for room in self.all_rooms if room.room_name == room_name][0]
+            person = [person for person in self.all_people if person.person_id == person_identifier][0]
+            prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
 
             if new_room.max_occupants < len(new_room.occupants):
                 new_room.occupants.append(person)
@@ -131,30 +131,26 @@ class Dojo:
         except:
             print("Error! Person or Room not found!")
 
-    @staticmethod
-    def load_people():
+    def load_people(self):
         my_file = open("person_data.txt")
         line = my_file.readline()
         while line:
             data_row = line.split()
             last_param = data_row[-1]
             person_name = ' '.join(data_row[0:2])
-            wants_accommodation = "F"
             if len(last_param) == 1:
                 wants_accommodation = data_row[-1]
                 person_type = data_row[-2]
             else:
                 wants_accommodation = "F"
                 person_type = data_row[-1]
-            dojo.add_person(person_name, person_type, wants_accommodation)
+            self.add_person(person_name, person_type, wants_accommodation)
             line = my_file.readline()
         my_file.close()
 
-    @staticmethod
-    def save_state():
+    def save_state(self):
         conn = sqlite3.connect('dojo.db')
         c = conn.cursor()
-        print("Database opened successfully")
 
         # Create Person Table
         c.execute('''CREATE TABLE IF NOT EXISTS person
@@ -178,7 +174,7 @@ class Dojo:
                 )''')
 
         # Save Persons Data
-        for person in dojo.all_people:
+        for person in self.all_people:
             opt_in = 0
             if isinstance(person, Staff):
                 person_type = "staff"
@@ -190,7 +186,7 @@ class Dojo:
 
         # Save Room Data
         c.execute('DELETE FROM occupant')
-        for room in dojo.all_rooms:
+        for room in self.all_rooms:
             if isinstance(room, Office):
                 room_type = "office"
             else:
@@ -203,9 +199,32 @@ class Dojo:
                 c.execute('INSERT INTO occupant VALUES (?, ?)', data_list)
 
         conn.commit()
+        print("Data saved successfully")
+        conn.close()
+
+    def load_state(self):
+        conn = sqlite3.connect('dojo.db')
+        c = conn.cursor()
+        c.execute('''SELECT * FROM person''')
+        people = c.fetchall()
+        for person in people:
+            row = list(person)
+            # print(person.person_id, person.person_name)
+            print(person[0], person[1], person[2], bool(person[3]))
+
+        # cur.execute('''SELECT * FROM tabla1''')
+        # todo = cur.fetchall()
+        # print
+        # todo
+        # print
+        # len(todo)
+        # for i in range(len(todo)):
+
+        print("Data loaded successfully")
         conn.close()
 
 dojo = Dojo()
+dojo.load_state()
 # dojo.create_room("office", "Purple", "Black", "Brown")
 # dojo.create_room("living space", "Yellow", "Orange", "Pink")
 # dojo.add_person("Neil Armstrong", "Staff")
@@ -213,14 +232,14 @@ dojo = Dojo()
 # dojo.add_person("Neilxx Armstrong", "Fellow")
 # dojo.add_person("Neilww Armstrong", "Staff")
 # dojo.add_person("Johnson Jones", "Fellow", "Y")
-# dojo.load_people()
+# # dojo.load_people()
 # print(len(dojo.all_people))
-
-for person in dojo.all_people:
-    print(person.person_id, person.person_name)
-for room in dojo.all_rooms:
-    print(room.room_name, len(room.occupants))
-dojo.print_allocations()
-dojo.print_unallocated()
-dojo.print_room("Purple")
-dojo.save_state()
+#
+# for person in dojo.all_people:
+#     print(person.person_id, person.person_name)
+# for room in dojo.all_rooms:
+#     print(room.room_name, len(room.occupants))
+# dojo.print_allocations()
+# dojo.print_unallocated()
+# dojo.print_room("Purple")
+# dojo.save_state()
