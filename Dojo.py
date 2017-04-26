@@ -1,5 +1,6 @@
 from RandomRoomAllocator.Room import *
 from RandomRoomAllocator.Person import *
+import prettytable as PrettyTable
 import sqlite3
 
 class Dojo:
@@ -48,9 +49,9 @@ class Dojo:
                 if new_id not in [person.person_id for person in self.all_people]:
                     break
             new_person = Fellow(person_name, opt_in, new_id)
-            new_person.allocate_office(new_person.person_name, dojo.all_rooms)
+            new_person.allocate_office(new_person.person_name, self.all_rooms)
             if opt_in:
-                new_person.allocate_living_space(new_person.person_name, dojo.all_rooms)
+                new_person.allocate_living_space(new_person.person_name, self.all_rooms)
             self.all_people.append(new_person)
             return
         else:
@@ -69,23 +70,37 @@ class Dojo:
             for occupant in occupants:
                 print(occupant.person_name)
 
-    def print_allocations(self):
-        if len(self.all_rooms) < 1:
-            print("No rooms registered")
-            return
+    def print_allocations(self, file_name=""):
+        if not file_name:
+            if len(self.all_rooms) < 1:
+                print("No rooms registered")
+                return
+            else:
+                for my_room in self.all_rooms:
+                    print()
+                    print(my_room.room_name.upper())
+                    print("------------------------------")
+                    occupants = []
+                    for occupant in my_room.occupants:
+                        occupants.append(occupant.person_name)
+                    print(', '.join(occupants))
         else:
+            my_file = open(file_name + ".txt", "w")
             for my_room in self.all_rooms:
-                print("-------------------")
-                print(my_room.room_name)
-                print("-------------------")
+                my_file.write("\n")
+                my_file.write(my_room.room_name.upper())
+                my_file.write("\n------------------------------\n")
+                occupants = []
                 for occupant in my_room.occupants:
-                    print(occupant.person_name)
+                    occupants.append(occupant.person_name)
+                my_file.write(', '.join(occupants) + "\n")
+            my_file.close()
 
-    def print_unallocated(self):
+    def print_unallocated(self, file_name=""):
         allocated_staff = []
         allocated_fellow_office = []
         allocated_fellow_living_space = []
-        for room in dojo.all_rooms:
+        for room in self.all_rooms:
             allocated_staff += [occupant for occupant in room.occupants
                                 if isinstance(occupant, Staff)]
             allocated_fellow_office += [occupant for occupant in room.occupants
@@ -100,22 +115,45 @@ class Dojo:
         unallocated_fellow_living_space = list(set([person for person in self.all_people
                                                    if isinstance(person, Fellow) and person.opt_in is True])
                                                - set(allocated_fellow_living_space))
-        print("Unallocated staff members")
-        print("-------------------------")
-        self.print_person_list(unallocated_staff)
+        if not file_name:
+            print()
+            print("Unallocated staff members")
+            print("-------------------------")
+            print(', '.join(self.print_person_list(unallocated_staff)))
 
-        print("Fellows without Office Space")
-        print("-------------------------")
-        self.print_person_list(unallocated_fellow_office)
+            print()
+            print("Fellows without Office Space")
+            print("-------------------------")
+            print(', '.join(self.print_person_list(unallocated_fellow_office)))
 
-        print("Fellows without Living Space")
-        print("-------------------------")
-        self.print_person_list(unallocated_fellow_living_space)
+            print()
+            print("Fellows without Living Space")
+            print("-------------------------")
+            print(', '.join(self.print_person_list(unallocated_fellow_living_space)))
+        else:
+            my_file = open(file_name + ".txt", "w")
+            my_file.write("Unallocated staff members")
+            my_file.write("\n-----------------------------------\n")
+            my_file.write(', '.join(self.print_person_list(unallocated_staff)))
+            my_file.write("\n")
+
+            my_file.write("Fellows without Office Space")
+            my_file.write("\n-----------------------------------\n")
+            my_file.write(', '.join(self.print_person_list(unallocated_fellow_office)))
+            my_file.write("\n")
+
+            my_file.write("Fellows without Living Space")
+            my_file.write("\n-----------------------------------\n")
+            my_file.write(', '.join(self.print_person_list(unallocated_fellow_living_space)))
+            my_file.write("\n")
+            my_file.close()
 
     @staticmethod
     def print_person_list(my_list):
+        result = []
         for person in my_list:
-            print(person.person_name)
+            result += [person.person_name]
+        return result
 
     def reallocate_person(self, person_identifier, room_name):
         try:
@@ -132,9 +170,9 @@ class Dojo:
             print("Error! Person or Room not found!")
 
     def load_people(self):
-        my_file = open("person_data.txt")
-        line = my_file.readline()
-        while line:
+        # my_file = open("person_data.txt")
+        # line = my_file.readline()
+        for line in open("person_data.txt"):
             data_row = line.split()
             last_param = data_row[-1]
             person_name = ' '.join(data_row[0:2])
@@ -145,8 +183,8 @@ class Dojo:
                 wants_accommodation = "F"
                 person_type = data_row[-1]
             self.add_person(person_name, person_type, wants_accommodation)
-            line = my_file.readline()
-        my_file.close()
+        #     line = my_file.readline()
+        # my_file.close()
 
     def save_state(self):
         conn = sqlite3.connect('dojo.db')
@@ -260,13 +298,13 @@ dojo.load_state()
 # dojo.add_person("Neilww Armstrong", "Staff")
 # dojo.add_person("Johnson Jones", "Fellow", "Y")
 # # dojo.load_people()
-print(len(dojo.all_people))
-
-for person in dojo.all_people:
-    print(person.person_id, person.person_name)
-for room in dojo.all_rooms:
-    print(room.room_name, len(room.occupants))
-dojo.print_allocations()
-dojo.print_unallocated()
-dojo.print_room("Purple")
+# print(len(dojo.all_people))
+#
+# for person in dojo.all_people:
+#     print(person.person_id, person.person_name)
+# for room in dojo.all_rooms:
+#     print(room.room_name, len(room.occupants))
+dojo.print_allocations("My Allocations.txt")
+dojo.print_unallocated("unllocated.txt")
+# dojo.print_room("Purple")
 # dojo.save_state()
