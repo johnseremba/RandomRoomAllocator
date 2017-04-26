@@ -21,14 +21,14 @@ class Person:
 
 
 class Staff(Person):
-    def __init__(self, person_name, rooms_list, person_id):
+    def __init__(self, person_name, person_id):
         self.person_name = person_name
         self.person_id = person_id
         print("Staff %s has been successfully added." % self.person_name)
 
 
 class Fellow(Person):
-    def __init__(self, person_name, opt_in, rooms_list, person_id):
+    def __init__(self, person_name, opt_in, person_id):
         self.person_name = person_name
         self.opt_in = opt_in
         self.person_id = person_id

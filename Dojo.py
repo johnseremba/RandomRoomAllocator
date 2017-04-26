@@ -13,14 +13,14 @@ class Dojo:
         rooms_list = list(room_name)
         if room_type == "office":
             for room in rooms_list:
-                new_office = Office(room)
+                new_office = Office(room, 6)
                 if new_office:
                     self.all_rooms.append(new_office)
                 else:
                     return False
         else:
             for room in rooms_list:
-                new_living_space = LivingSpace(room)
+                new_living_space = LivingSpace(room, 4)
                 if new_living_space:
                     self.all_rooms.append(new_living_space)
                 else:
@@ -30,12 +30,12 @@ class Dojo:
     def add_person(self, person_name, person_type, wants_accommodation="N"):
         person_type = person_type.lower()
         if person_type == "staff":
-            for j in range(len([x for x in dojo.all_people if isinstance(x, Staff)]), 500):
+            for j in range(len([x for x in self.all_people if isinstance(x, Staff)]), 500):
                 new_id = "ST" + str(j + 1)
-                if new_id not in [person.person_id for person in dojo.all_people]:
+                if new_id not in [person.person_id for person in self.all_people]:
                     break
-            new_person = Staff(person_name, dojo.all_rooms, new_id)
-            new_person.allocate_office(new_person.person_name, dojo.all_rooms)
+            new_person = Staff(person_name, new_id)
+            new_person.allocate_office(new_person.person_name, self.all_rooms)
             self.all_people.append(new_person)
             return
         elif person_type == "fellow":
@@ -43,11 +43,11 @@ class Dojo:
                 opt_in = True
             else:
                 opt_in = False
-            for j in range(len([x for x in dojo.all_people if isinstance(x, Fellow)]), 500):
+            for j in range(len([x for x in self.all_people if isinstance(x, Fellow)]), 500):
                 new_id = "FW" + str(j + 1)
-                if new_id not in [person.person_id for person in dojo.all_people]:
+                if new_id not in [person.person_id for person in self.all_people]:
                     break
-            new_person = Fellow(person_name, opt_in, dojo.all_rooms, new_id)
+            new_person = Fellow(person_name, opt_in, new_id)
             new_person.allocate_office(new_person.person_name, dojo.all_rooms)
             if opt_in:
                 new_person.allocate_living_space(new_person.person_name, dojo.all_rooms)
@@ -205,21 +205,48 @@ class Dojo:
     def load_state(self):
         conn = sqlite3.connect('dojo.db')
         c = conn.cursor()
+
+        # Load People
         c.execute('''SELECT * FROM person''')
         people = c.fetchall()
         for person in people:
-            row = list(person)
-            # print(person.person_id, person.person_name)
-            print(person[0], person[1], person[2], bool(person[3]))
+            person_id = person[0]
+            person_name = person[1]
+            person_type = person[2]
+            opt_in = bool(person[3])
+            if person_type == "staff":
+                new_person = Staff(person_name, person_id)
+                self.all_people.append(new_person)
+            elif person_type == "fellow":
+                new_person = Fellow(person_name, opt_in, person_id)
+                self.all_people.append(new_person)
+            else:
+                print("Invalid person type")
 
-        # cur.execute('''SELECT * FROM tabla1''')
-        # todo = cur.fetchall()
-        # print
-        # todo
-        # print
-        # len(todo)
-        # for i in range(len(todo)):
+        # Load Rooms
+        c.execute('''SELECT * FROM room''')
+        rooms = c.fetchall()
+        for room in rooms:
+            room_name = room[0]
+            room_type = room[1]
+            max_occupants = room[2]
 
+            if room_type == "office":
+                new_room = Office(room_name, max_occupants)
+                self.all_rooms.append(new_room)
+            elif room_type == "living_space":
+                new_room = LivingSpace(room_name, max_occupants)
+                self.all_rooms.append(new_room)
+            else:
+                print("Invalid room type")
+
+            # Load room occupants
+            c.execute('SELECT * FROM occupant WHERE room_name=?', 'Purple')
+            my_occupants = c.fetchall()
+            for occupant in my_occupants:
+                person_id = occupant[0]
+                person = [person for person in self.all_people if person.person_id == person_id][0]
+                new_room.occupants.append(person)
         print("Data loaded successfully")
         conn.close()
 
