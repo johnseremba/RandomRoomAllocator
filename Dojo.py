@@ -160,10 +160,11 @@ class Dojo:
             new_room = [room for room in self.all_rooms if room.room_name == room_name][0]
             person = [person for person in self.all_people if person.person_id == person_identifier][0]
             prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
-
-            if new_room.max_occupants < len(new_room.occupants):
+            print(int(new_room.max_occupants) > len(new_room.occupants))
+            if len(new_room.occupants) < int(new_room.max_occupants):
                 new_room.occupants.append(person)
                 prev_room.occupants.remove(person)
+                print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
             else:
                 print("Destination room is fully occupied!")
         except:
@@ -304,7 +305,8 @@ dojo.load_state()
 #     print(person.person_id, person.person_name)
 # for room in dojo.all_rooms:
 #     print(room.room_name, len(room.occupants))
-dojo.print_allocations("My Allocations.txt")
+dojo.print_allocations()
 dojo.print_unallocated("unllocated.txt")
+dojo.reallocate_person("ST1", "popo")
 # dojo.print_room("Purple")
 # dojo.save_state()
