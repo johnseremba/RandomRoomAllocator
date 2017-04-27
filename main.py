@@ -6,10 +6,10 @@ Usage:
     main.py print_room <room_name>
     main.py print_allocations [<filename>]
     main.py reallocate_person <person_identifier> <new_room_name>
+    main.py print_pretty_allocations
     main.py load_people
     main.py save_state [<database_name>]
     main.py load_state <sqlite_database>
-    main.py print_pretty_allocations
     main.py
     main.py (-h | --help | --version)
 
@@ -125,7 +125,7 @@ class Main (cmd.Cmd):
         dojo.load_state(db_name)
 
     @docopt_cmd
-    def do_print_pretty_allocations(self):
+    def do_print_pretty_allocations(self, arg):
         """Usage: print_pretty_allocations"""
         dojo.print_pretty_allocations()
 
