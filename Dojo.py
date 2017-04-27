@@ -1,7 +1,10 @@
-from RandomRoomAllocator.Room import *
-from RandomRoomAllocator.Person import *
-import prettytable as PrettyTable
+from Room import *
+from Person import *
+from prettytable import PrettyTable
 import sqlite3
+import string
+import os
+
 
 class Dojo:
     def __init__(self):
@@ -9,38 +12,60 @@ class Dojo:
         self.all_rooms = []
         self.all_people = []
 
+    # Checks whether the room_name you're trying to register is already existent
+    def room_already_registered(self, room_name):
+        available = [room for room in self.all_rooms if room.room_name == room_name]
+        if len(available) > 0:
+            return True
+        else:
+            return False
+
+    # Creates a new room of either type Office, or LivingSpace basing on the room_type argument
     def create_room(self, room_type, *room_name):
-        """Usage: create_room <room_type> <room_name>..."""
-        rooms_list = list(room_name)
+        if type(room_name) == tuple:
+            rooms_list = list(room_name)
+            if not isinstance(rooms_list[0], str):
+                rooms_list = rooms_list[0]
+        invalid_chars = set(string.punctuation.replace("_", ""))
         if room_type == "office":
             for room in rooms_list:
-                new_office = Office(room, 6)
-                if new_office:
-                    self.all_rooms.append(new_office)
+                room_name = room.strip()
+                if any(char in invalid_chars for char in room_name):
+                    print("Error! The room name contains some invalid characters!")
+                    continue
                 else:
-                    return False
+                    if not self.room_already_registered(room_name):
+                        new_office = Office(room_name, 6)
+                        self.all_rooms.append(new_office)
+                    else:
+                        print("Error! The room %s already exists in the Dojo!" % room_name)
+                        continue
         else:
             for room in rooms_list:
-                new_living_space = LivingSpace(room, 4)
-                if new_living_space:
+                room_name = room.strip()
+                if not self.room_already_registered(room_name):
+                    new_living_space = LivingSpace(room, 4)
                     self.all_rooms.append(new_living_space)
                 else:
+                    print("Error! The room %s already exists in the Dojo!" % room_name)
                     return False
         return True
 
     def add_person(self, person_name, person_type, wants_accommodation="N"):
         person_type = person_type.lower()
+        person_name = person_name.strip()
         if person_type == "staff":
             for j in range(len([x for x in self.all_people if isinstance(x, Staff)]), 500):
                 new_id = "ST" + str(j + 1)
                 if new_id not in [person.person_id for person in self.all_people]:
                     break
             new_person = Staff(person_name, new_id)
+            print("Staff %s has been successfully added." % person_name)
             new_person.allocate_office(new_person.person_name, self.all_rooms)
             self.all_people.append(new_person)
             return
         elif person_type == "fellow":
-            if wants_accommodation == "Y":
+            if wants_accommodation.lower() == "y":
                 opt_in = True
             else:
                 opt_in = False
@@ -49,6 +74,7 @@ class Dojo:
                 if new_id not in [person.person_id for person in self.all_people]:
                     break
             new_person = Fellow(person_name, opt_in, new_id)
+            print("Fellow %s has been successfully added." % person_name)
             new_person.allocate_office(new_person.person_name, self.all_rooms)
             if opt_in:
                 new_person.allocate_living_space(new_person.person_name, self.all_rooms)
@@ -58,17 +84,27 @@ class Dojo:
             print("Invalid person type")
 
     def print_room(self, room_name):
-        my_room = [room for room in self.all_rooms if room.room_name == room_name][0]
-        print(my_room.room_name)
-        occupants = my_room.occupants
+        if self.room_already_registered(room_name):
+            my_room = [room for room in self.all_rooms if room.room_name == room_name][0]
+            occupants = my_room.occupants
+        else:
+            print("The room %s does not exist in the Dojo!" % room_name)
+            return
+
         if len(occupants) < 1:
             print("Room has no occupants")
             return
         else:
-            print("All people in room %s" % room_name)
-            print("----------------------------------")
+            my_table = PrettyTable(['Person ID', 'Name', 'Person Type'])
+            print("occupants in room %s" % room_name)
             for occupant in occupants:
-                print(occupant.person_name)
+                if isinstance(occupant, Staff):
+                    person_type = "Staff"
+                else:
+                    person_type = "Fellow"
+
+                my_table.add_row([occupant.person_id, occupant.person_name, person_type])
+            print(my_table)
 
     def print_allocations(self, file_name=""):
         if not file_name:
@@ -95,6 +131,7 @@ class Dojo:
                     occupants.append(occupant.person_name)
                 my_file.write(', '.join(occupants) + "\n")
             my_file.close()
+            os.startfile(file_name + ".txt")
 
     def print_unallocated(self, file_name=""):
         allocated_staff = []
@@ -160,7 +197,7 @@ class Dojo:
             new_room = [room for room in self.all_rooms if room.room_name == room_name][0]
             person = [person for person in self.all_people if person.person_id == person_identifier][0]
             prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
-            print(int(new_room.max_occupants) > len(new_room.occupants))
+            # print(int(new_room.max_occupants) > len(new_room.occupants))
             if len(new_room.occupants) < int(new_room.max_occupants):
                 new_room.occupants.append(person)
                 prev_room.occupants.remove(person)
@@ -171,9 +208,8 @@ class Dojo:
             print("Error! Person or Room not found!")
 
     def load_people(self):
-        # my_file = open("person_data.txt")
-        # line = my_file.readline()
         for line in open("person_data.txt"):
+            line.strip()
             data_row = line.split()
             last_param = data_row[-1]
             person_name = ' '.join(data_row[0:2])
@@ -184,8 +220,6 @@ class Dojo:
                 wants_accommodation = "F"
                 person_type = data_row[-1]
             self.add_person(person_name, person_type, wants_accommodation)
-        #     line = my_file.readline()
-        # my_file.close()
 
     def save_state(self):
         conn = sqlite3.connect('dojo.db')
@@ -289,24 +323,9 @@ class Dojo:
         print("Data loaded successfully")
         conn.close()
 
-dojo = Dojo()
-dojo.load_state()
+# dojo = Dojo()
+#
 # dojo.create_room("office", "Purple", "Black", "Brown")
 # dojo.create_room("living space", "Yellow", "Orange", "Pink")
-# dojo.add_person("Neil Armstrong", "Staff")
-# dojo.add_person("Neilee Armstrong", "Staff")
-# dojo.add_person("Neilxx Armstrong", "Fellow")
-# dojo.add_person("Neilww Armstrong", "Staff")
-# dojo.add_person("Johnson Jones", "Fellow", "Y")
-# # dojo.load_people()
-# print(len(dojo.all_people))
-#
-# for person in dojo.all_people:
-#     print(person.person_id, person.person_name)
-# for room in dojo.all_rooms:
-#     print(room.room_name, len(room.occupants))
-dojo.print_allocations()
-dojo.print_unallocated("unllocated.txt")
-dojo.reallocate_person("ST1", "popo")
-# dojo.print_room("Purple")
-# dojo.save_state()
+# dojo.load_people()
+# dojo.print_allocations()
