@@ -106,21 +106,20 @@ class Dojo:
                 my_table.add_row([occupant.person_id, occupant.person_name, person_type])
             print(my_table)
 
-    def print_allocations(self, file_name=""):
-        if not file_name:
-            if len(self.all_rooms) < 1:
-                print("No rooms registered")
-                return
-            else:
-                for my_room in self.all_rooms:
-                    print()
-                    print(my_room.room_name.upper())
-                    print("------------------------------")
-                    occupants = []
-                    for occupant in my_room.occupants:
-                        occupants.append(occupant.person_name)
-                    print(', '.join(occupants))
+    def print_allocations(self, file_name):
+        if len(self.all_rooms) < 1:
+            print("No rooms registered")
+            return
         else:
+            for my_room in self.all_rooms:
+                print()
+                print(my_room.room_name.upper())
+                print("------------------------------")
+                occupants = []
+                for occupant in my_room.occupants:
+                    occupants.append(occupant.person_name)
+                print(', '.join(occupants))
+        if file_name:
             my_file = open(file_name + ".txt", "w")
             for my_room in self.all_rooms:
                 my_file.write("\n")
@@ -133,7 +132,7 @@ class Dojo:
             my_file.close()
             os.startfile(file_name + ".txt")
 
-    def print_unallocated(self, file_name=""):
+    def print_unallocated(self, file_name):
         allocated_staff = []
         allocated_fellow_office = []
         allocated_fellow_living_space = []
@@ -152,22 +151,22 @@ class Dojo:
         unallocated_fellow_living_space = list(set([person for person in self.all_people
                                                    if isinstance(person, Fellow) and person.opt_in is True])
                                                - set(allocated_fellow_living_space))
-        if not file_name:
-            print()
-            print("Unallocated staff members")
-            print("-------------------------")
-            print(', '.join(self.print_person_list(unallocated_staff)))
+        print()
+        print("Unallocated staff members")
+        print("-------------------------")
+        print(', '.join(self.print_person_list(unallocated_staff)))
 
-            print()
-            print("Fellows without Office Space")
-            print("-------------------------")
-            print(', '.join(self.print_person_list(unallocated_fellow_office)))
+        print()
+        print("Fellows without Office Space")
+        print("-------------------------")
+        print(', '.join(self.print_person_list(unallocated_fellow_office)))
 
-            print()
-            print("Fellows without Living Space")
-            print("-------------------------")
-            print(', '.join(self.print_person_list(unallocated_fellow_living_space)))
-        else:
+        print()
+        print("Fellows without Living Space")
+        print("-------------------------")
+        print(', '.join(self.print_person_list(unallocated_fellow_living_space)))
+
+        if file_name is not None:
             my_file = open(file_name + ".txt", "w")
             my_file.write("Unallocated staff members")
             my_file.write("\n-----------------------------------\n")
@@ -184,6 +183,7 @@ class Dojo:
             my_file.write(', '.join(self.print_person_list(unallocated_fellow_living_space)))
             my_file.write("\n")
             my_file.close()
+            os.startfile(my_file)
 
     @staticmethod
     def print_person_list(my_list):
@@ -193,19 +193,37 @@ class Dojo:
         return result
 
     def reallocate_person(self, person_identifier, room_name):
-        try:
+        # Get the room object based on the room name
+        new_room = [room for room in self.all_rooms if room.room_name == room_name]
+        if len(new_room) > 0:
             new_room = [room for room in self.all_rooms if room.room_name == room_name][0]
+        else:
+            print("The room {0} does not exist in the Dojo.".format(room_name))
+            return
+
+        # Get the person object based on the person name
+        person = [person for person in self.all_people if person.person_id == person_identifier]
+        if len(person) > 0:
             person = [person for person in self.all_people if person.person_id == person_identifier][0]
-            prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
-            # print(int(new_room.max_occupants) > len(new_room.occupants))
-            if len(new_room.occupants) < int(new_room.max_occupants):
-                new_room.occupants.append(person)
+        else:
+            print("Person {0} does not exist in the Dojo.".format(person_identifier))
+            return
+
+        # Allocate person to the new room if there is space
+        if len(new_room.occupants) < int(new_room.max_occupants):
+            # Get the room object where the person was assigned previously and remove him
+            prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
+            if len(prev_room) > 0:
+                prev_room = \
+                    [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
                 prev_room.occupants.remove(person)
-                print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
-            else:
-                print("Destination room is fully occupied!")
-        except:
-            print("Error! Person or Room not found!")
+
+            # Add person to the new room
+            new_room.occupants.append(person)
+            print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
+        else:
+            print("Destination room is fully occupied!")
+            return
 
     def load_people(self):
         for line in open("person_data.txt"):

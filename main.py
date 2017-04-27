@@ -73,8 +73,9 @@ class Main (cmd.Cmd):
         person_name = first_name + " " + last_name
         wants_accommodation = arg['<wants_accommodation>']
 
-        if type(wants_accommodation == None):
-            wants_accommodation = "F"
+        if wants_accommodation is None:
+            wants_accommodation = "N"
+        print(wants_accommodation)
         dojo.add_person(person_name, person_type, wants_accommodation)
 
     @docopt_cmd
@@ -85,10 +86,16 @@ class Main (cmd.Cmd):
 
     @docopt_cmd
     def do_print_allocations(self, arg):
-        """Usage print_allocations [<filename>]"""
+        """Usage: print_allocations [<filename>]"""
         file_name = arg['<filename>']
-        # dojo.load_people()
+        dojo.load_people()
         dojo.print_allocations(file_name)
+
+    @docopt_cmd
+    def do_print_unallocated(self, arg):
+        """Usage: print_unallocated [<filename>]"""
+        file_name = arg['<filename>']
+        dojo.print_unallocated(file_name)
 
     def do_quit(self, arg):
         """Quits out the Random room allocator."""
