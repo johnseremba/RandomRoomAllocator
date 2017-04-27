@@ -40,9 +40,11 @@ class Dojo:
                 if not self.room_already_registered(room_name):
                     if room_type == "office":
                         new_office = Office(room_name, 6)
+                        print("An office called %s has been successfully created!" % room_name)
                         self.all_rooms.append(new_office)
                     elif room_type == "living_space":
                         new_living_space = LivingSpace(room, 4)
+                        print("A Living Space called %s has been successfully created!" % room_name)
                         self.all_rooms.append(new_living_space)
                     else:
                         print("Invalid room type!!")
@@ -232,10 +234,15 @@ class Dojo:
         # Allocate person to the new room if there is space
         if len(new_room.occupants) < int(new_room.max_occupants):
             # Get the room object where the person was assigned previously and remove him
-            prev_room = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
-            if len(prev_room) > 0:
+            prev_room_office = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
+            prev_room_living = [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)]
+            if len(prev_room_office) > 0:
                 prev_room = \
                     [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
+                prev_room.occupants.remove(person)
+            if len(prev_room_living) > 0:
+                prev_room = \
+                    [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)][0]
                 prev_room.occupants.remove(person)
 
             # Add person to the new room
@@ -261,7 +268,7 @@ class Dojo:
 
     def save_state(self, db_name):
         if db_name is not None:
-            conn = sqlite3.connect(db_name)
+            conn = sqlite3.connect(db_name + ".db")
         else:
             conn = sqlite3.connect('dojo.db')
         c = conn.cursor()
@@ -317,25 +324,28 @@ class Dojo:
         conn.close()
 
     def load_state(self, db_name):
-        conn = sqlite3.connect(db_name)
-        c = conn.cursor()
+        try:
+            conn = sqlite3.connect(db_name + ".db")
+            c = conn.cursor()
 
-        # Load People
-        c.execute('''SELECT * FROM person''')
-        people = c.fetchall()
-        for person in people:
-            person_id = person[0]
-            person_name = person[1]
-            person_type = person[2]
-            opt_in = bool(person[3])
-            if person_type == "staff":
-                new_person = Staff(person_name, person_id)
-                self.all_people.append(new_person)
-            elif person_type == "fellow":
-                new_person = Fellow(person_name, opt_in, person_id)
-                self.all_people.append(new_person)
-            else:
-                print("Invalid person type")
+            # Load People
+            c.execute('''SELECT * FROM person''')
+            people = c.fetchall()
+            for person in people:
+                person_id = person[0]
+                person_name = person[1]
+                person_type = person[2]
+                opt_in = bool(person[3])
+                if person_type == "staff":
+                    new_person = Staff(person_name, person_id)
+                    self.all_people.append(new_person)
+                elif person_type == "fellow":
+                    new_person = Fellow(person_name, opt_in, person_id)
+                    self.all_people.append(new_person)
+                else:
+                    print("Invalid person type")
+        except sqlite3.OperationalError:
+            print("Invalid database name!")
 
         # Load Rooms
         c.execute('''SELECT * FROM room''')
@@ -364,9 +374,13 @@ class Dojo:
         print("Data loaded successfully")
         conn.close()
 
+    def print_pretty_allocations(self):
+        for room in self.all_rooms:
+            self.print_room(room.room_name)
+
 # dojo = Dojo()
 #
 # dojo.create_room("office", "Purple", "Black", "Brown")
 # dojo.create_room("living space", "Yellow", "Orange", "Pink")
 # dojo.load_people()
-# dojo.print_allocations()
+# dojo.print_pretty_allocations()

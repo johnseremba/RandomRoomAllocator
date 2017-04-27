@@ -9,6 +9,7 @@ Usage:
     main.py load_people
     main.py save_state [<database_name>]
     main.py load_state <sqlite_database>
+    main.py print_pretty_allocations
     main.py
     main.py (-h | --help | --version)
 
@@ -79,7 +80,6 @@ class Main (cmd.Cmd):
 
         if wants_accommodation is None:
             wants_accommodation = "N"
-        print(wants_accommodation)
         dojo.add_person(person_name, person_type, wants_accommodation)
 
     @docopt_cmd
@@ -92,7 +92,6 @@ class Main (cmd.Cmd):
     def do_print_allocations(self, arg):
         """Usage: print_allocations [<filename>]"""
         file_name = arg['<filename>']
-        dojo.load_people()
         dojo.print_allocations(file_name)
 
     @docopt_cmd
@@ -121,9 +120,14 @@ class Main (cmd.Cmd):
 
     @docopt_cmd
     def do_load_state(self, arg):
-        """load_state <sqlite_database>"""
+        """Usage: load_state <sqlite_database>"""
         db_name = arg['<sqlite_database>']
         dojo.load_state(db_name)
+
+    @docopt_cmd
+    def do_print_pretty_allocations(self):
+        """Usage: print_pretty_allocations"""
+        dojo.print_pretty_allocations()
 
     def do_quit(self, arg):
         """Quits out the Random room allocator."""

@@ -11,7 +11,6 @@ class Office(Room):
         self.room_name = room_name
         self.max_occupants = max_occupants
         self.occupants = []
-        print("An office called %s has been successfully created!" % self.room_name)
 
 
 class LivingSpace(Room):
@@ -19,4 +18,3 @@ class LivingSpace(Room):
         self.room_name = room_name
         self.max_occupants = max_occupants
         self.occupants = []
-        print("A Living Space called %s has been successfully created!" % self.room_name)
