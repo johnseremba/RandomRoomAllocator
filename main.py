@@ -5,6 +5,10 @@ Usage:
     main.py add_person <first_name> <last_name> <person_type> [<wants_accommodation>]
     main.py print_room <room_name>
     main.py print_allocations [<filename>]
+    main.py reallocate_person <person_identifier> <new_room_name>
+    main.py load_people
+    main.py save_state [<database_name>]
+    main.py load_state <sqlite_database>
     main.py
     main.py (-h | --help | --version)
 
@@ -96,6 +100,30 @@ class Main (cmd.Cmd):
         """Usage: print_unallocated [<filename>]"""
         file_name = arg['<filename>']
         dojo.print_unallocated(file_name)
+
+    @docopt_cmd
+    def do_reallocate_person(self, arg):
+        """Usage: reallocate_person <person_identifier> <new_room_name>"""
+        person_id = arg['<person_identifier>']
+        room_name = arg['<new_room_name>']
+        dojo.reallocate_person(person_id, room_name)
+
+    @docopt_cmd
+    def do_load_people(self, arg):
+        """Usage: load_people"""
+        dojo.load_people()
+
+    @docopt_cmd
+    def do_save_state(self, arg):
+        """Usage: save_state [<database_name>]"""
+        db_name = arg['<database_name>']
+        dojo.save_state(db_name)
+
+    @docopt_cmd
+    def do_load_state(self, arg):
+        """load_state <sqlite_database>"""
+        db_name = arg['<sqlite_database>']
+        dojo.load_state(db_name)
 
     def do_quit(self, arg):
         """Quits out the Random room allocator."""
