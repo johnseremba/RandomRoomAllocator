@@ -1,5 +1,5 @@
-from RandomRoomAllocator.Room import Office
-from RandomRoomAllocator.Room import LivingSpace
+from Room import Office
+from Room import LivingSpace
 from random import randint
 
 
@@ -22,17 +22,17 @@ class Person:
 
 class Staff(Person):
     def __init__(self, person_name, person_id):
-        self.person_name = person_name
+        new_name = person_name.split(" ")
+        self.person_name = new_name[0].capitalize() + ' ' + new_name[1].capitalize()
         self.person_id = person_id
-        print("Staff %s has been successfully added." % self.person_name)
 
 
 class Fellow(Person):
     def __init__(self, person_name, opt_in, person_id):
-        self.person_name = person_name
+        new_name = person_name.split(" ")
+        self.person_name = new_name[0].capitalize() + ' ' + new_name[1].capitalize()
         self.opt_in = opt_in
         self.person_id = person_id
-        print("Fellow %s has been successfully added." % self.person_name)
 
     def allocate_living_space(self, person_name, rooms_list):
         available_living_spaces = [room for room in rooms_list
