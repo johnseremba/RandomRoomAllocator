@@ -1,5 +1,5 @@
-from Room import *
-from Person import *
+from RandomRoomAllocator.Room import *
+from RandomRoomAllocator.Person import *
 from prettytable import PrettyTable
 import sqlite3
 import string
@@ -22,6 +22,8 @@ class Dojo:
 
     # Creates a new room of either type Office, or LivingSpace basing on the room_type argument
     def create_room(self, room_type, *room_name):
+        result = []
+        room_type = room_type.lower()
         if type(room_name) == tuple:
             rooms_list = list(room_name)
             # Handle arguments passed from docopt. Get the arguments list
@@ -40,18 +42,20 @@ class Dojo:
                 if not self.room_already_registered(room_name):
                     if room_type == "office":
                         new_office = Office(room_name, 6)
-                        print("An office called %s has been successfully created!" % room_name)
+                        print("An Office called %s has been successfully created!" % room_name)
                         self.all_rooms.append(new_office)
+                        result.append(new_office)
                     elif room_type == "living_space":
                         new_living_space = LivingSpace(room, 4)
                         print("A Living Space called %s has been successfully created!" % room_name)
                         self.all_rooms.append(new_living_space)
+                        result.append(new_living_space)
                     else:
                         print("Invalid room type!!")
                 else:
                     print("Error! The room %s already exists in the Dojo!" % room_name)
                     continue
-        return True
+        return result
 
     def add_person(self, person_name, person_type, wants_accommodation="N"):
         person_type = person_type.lower()
@@ -70,7 +74,7 @@ class Dojo:
 
             # Add the created person object to the list all_people of Dojo
             self.all_people.append(new_person)
-            return
+            return new_person
         elif person_type == "fellow":
             # Get boolean equivalents of the passed arguments
             if wants_accommodation.lower() == "y":
@@ -93,9 +97,10 @@ class Dojo:
 
             # Add the created person object to the list all_people of Dojo
             self.all_people.append(new_person)
-            return
+            return new_person
         else:
             print("Invalid person type")
+        return
 
     def print_room(self, room_name):
         if self.room_already_registered(room_name):
@@ -107,7 +112,7 @@ class Dojo:
             return
 
         if len(occupants) < 1:
-            print("Room has no occupants")
+            print("Room %s has no occupants" % room_name)
             return
         else:
             print("Occupants in room %s" % room_name)
@@ -170,6 +175,7 @@ class Dojo:
         unallocated_fellow_living_space = list(set([person for person in self.all_people
                                                    if isinstance(person, Fellow) and person.opt_in is True])
                                                - set(allocated_fellow_living_space))
+
         print()
         print("Unallocated staff members")
         print("-------------------------")
@@ -206,6 +212,7 @@ class Dojo:
 
             # Open the file with the default application
             os.startfile(my_file)
+        return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     @staticmethod
     def print_person_list(my_list):
@@ -237,23 +244,26 @@ class Dojo:
             prev_room_office = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
             prev_room_living = [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)]
             if len(prev_room_office) > 0:
+                if new_room == prev_room_office:
+                    return
                 prev_room = \
                     [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
                 prev_room.occupants.remove(person)
+                new_room.occupants.append(person)
             if len(prev_room_living) > 0:
+                if new_room == prev_room_living:
+                    return
                 prev_room = \
                     [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)][0]
                 prev_room.occupants.remove(person)
-
-            # Add person to the new room
-            new_room.occupants.append(person)
+                new_room.occupants.append(person)
             print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
         else:
             print("Destination room is fully occupied!")
             return
 
     def load_people(self):
-        for line in open("person_data.txt"):
+        for line in open("D:\dojo\person_data.txt"):
             line.strip()
             data_row = line.split()
             last_param = data_row[-1]
@@ -378,9 +388,34 @@ class Dojo:
         for room in self.all_rooms:
             self.print_room(room.room_name)
 
-# dojo = Dojo()
-#
-# dojo.create_room("office", "Purple", "Black", "Brown")
-# dojo.create_room("living space", "Yellow", "Orange", "Pink")
-# dojo.load_people()
-# dojo.print_pretty_allocations()
+    def print_all_data(self):
+        print("Dojo Data")
+        my_table = PrettyTable(['Person ID', 'Name', 'Office', 'Living Space'])
+        for person in self.all_people:
+            person_id = person.person_id
+            person_name = person.person_name
+            _office = [room for room in self.all_rooms
+                       if isinstance(room, Office) and person in room.occupants]
+            if _office:
+                office = ''.join(_office[0].room_name)
+            else:
+                office = ''
+            _living = [room for room in self.all_rooms
+                       if isinstance(room, LivingSpace) and person in room.occupants]
+            if _living:
+                living_space = ''.join(_living[0].room_name)
+            else:
+                living_space = ''
+            my_table.add_row([person_id, person_name, office, living_space])
+        print(my_table)
+
+        print("Registered rooms in the dojo")
+        my_table = PrettyTable(['Room Name', 'Room Type'])
+        for room in self.all_rooms:
+            room_name = room.room_name
+            if isinstance(room, Office):
+                room_type = "Office"
+            else:
+                room_type = "Living Space"
+            my_table.add_row([room_name, room_type])
+        print(my_table)

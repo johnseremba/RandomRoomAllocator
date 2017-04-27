@@ -10,6 +10,7 @@ Usage:
     main.py load_people
     main.py save_state [<database_name>]
     main.py load_state <sqlite_database>
+    main.py print_all_data
     main.py
     main.py (-h | --help | --version)
 
@@ -128,6 +129,11 @@ class Main (cmd.Cmd):
     def do_print_pretty_allocations(self, arg):
         """Usage: print_pretty_allocations"""
         dojo.print_pretty_allocations()
+
+    @docopt_cmd
+    def do_print_all_data(self, arg):
+        """Usage: print_all_data"""
+        dojo.print_all_data()
 
     def do_quit(self, arg):
         """Quits out the Random room allocator."""
