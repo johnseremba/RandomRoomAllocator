@@ -211,7 +211,7 @@ class Dojo:
             my_file.close()
 
             # Open the file with the default application
-            os.startfile(my_file)
+            os.startfile(file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     @staticmethod
