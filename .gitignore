@@ -24,6 +24,10 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv/
+distribute_setup.py
+dojo_proj/
+tests/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

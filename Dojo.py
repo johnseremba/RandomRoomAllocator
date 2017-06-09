@@ -1,4 +1,3 @@
-from Room import *
 from Person import *
 from prettytable import PrettyTable
 import sqlite3
@@ -111,11 +110,11 @@ class Dojo:
             occupants = my_room.occupants
         else:
             print("The room %s does not exist in the Dojo!" % room_name)
-            return
+            return False
 
         if len(occupants) < 1:
             print("Room %s has no occupants" % room_name)
-            return
+            return False
         else:
             print("Occupants in room %s" % room_name)
             my_table = PrettyTable(['Person ID', 'Name', 'Person Type'])
@@ -127,6 +126,7 @@ class Dojo:
 
                 my_table.add_row([occupant.person_id, occupant.person_name, person_type])
             print(my_table)
+        return True
 
     def print_allocations(self, file_name):
         if len(self.all_rooms) < 1:

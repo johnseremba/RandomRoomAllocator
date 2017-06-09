@@ -2,6 +2,7 @@ import unittest
 from Dojo import Dojo
 from Person import Fellow, Staff
 from Room import LivingSpace, Office
+import sys
 
 
 class TestCreateRoom (unittest.TestCase):
@@ -10,9 +11,15 @@ class TestCreateRoom (unittest.TestCase):
 
     def test_create_room_successfully(self):
         initial_room_count = len(self.dojo.all_rooms)
-        self.dojo.create_room("office", "Blue")
+        self.dojo.create_room("office", "Blue", "Green,")
         new_room_count = len(self.dojo.all_rooms)
         self.assertEqual(new_room_count - initial_room_count, 1, msg="Total rooms should be 1")
+
+    def test_invalid_room_type(self):
+        initial_room_count = len(self.dojo.all_rooms)
+        self.dojo.create_room("officez", "Blue", "Green,")
+        new_room_count = len(self.dojo.all_rooms)
+        self.assertEqual(new_room_count - initial_room_count, 0, msg="Room shouldn't be created")
 
     def test_create_many_rooms(self):
         initial_room_count = len(self.dojo.all_rooms)
@@ -21,6 +28,7 @@ class TestCreateRoom (unittest.TestCase):
         self.assertEqual(new_room_count - initial_room_count, 3, msg="Created rooms should be 3")
         self.assertEqual(len([x for x in self.dojo.all_rooms
                               if isinstance(x, Office)]), 3, msg="Created offices should be 4")
+
 
     def test_create_living_space(self):
         initial_room_count = len(self.dojo.all_rooms)
@@ -94,6 +102,21 @@ class TestAllocateRoom(unittest.TestCase):
                     allocated = True
                     break
         self.assertTrue(allocated, msg="Fellow should be assigned an office")
+
+    def test_print_occupants(self):
+        occupied_rooms = [room for room in self.dojo.all_rooms if len(room.occupants) > 0]
+        not_occupied_rooms = [room for room in self.dojo.all_rooms if len(room.occupants) < 1]
+        result = False
+        for room in occupied_rooms:
+            result = self.dojo.print_room(room.room_name)
+            self.assertTrue(result, msg="Room should have occupants")
+
+        for room in not_occupied_rooms:
+            result = self.dojo.print_room(room.room_name)
+            self.assertFalse(result, msg="Room should not have occupants")
+
+        self.assertFalse(self.dojo.print_room("Outopia"), msg="Room doesn't exist")
+
 
     def test_allocate_living_space_fellow(self):
         self.dojo.add_person("Simon Peterson", "Fellow", "Y")
