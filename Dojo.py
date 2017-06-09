@@ -4,6 +4,8 @@ from prettytable import PrettyTable
 import sqlite3
 import string
 import os
+import sys
+import subprocess
 
 
 class Dojo:
@@ -153,7 +155,7 @@ class Dojo:
                 my_file.write(', '.join(occupants) + "\n")
             my_file.close()
             # Open the file with the default application
-            os.startfile("ExternalData/" + file_name + ".txt")
+            self.open_file("ExternalData/" + file_name + ".txt")
 
     def print_unallocated(self, file_name):
         allocated_staff = []
@@ -211,7 +213,7 @@ class Dojo:
             my_file.close()
 
             # Open the file with the default application
-            os.startfile("ExternalData/" + file_name + ".txt")
+            self.open_file("ExternalData/" + file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     @staticmethod
@@ -420,3 +422,12 @@ class Dojo:
                 room_type = "Living Space"
             my_table.add_row([room_name, room_type])
         print(my_table)
+
+    # Got this function from stack overflow, for opening files across multiple platforms
+    @staticmethod
+    def open_file(filename):
+        if sys.platform == "win32":
+            os.startfile(filename)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, filename])
