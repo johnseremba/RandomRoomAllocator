@@ -1,5 +1,5 @@
-from RandomRoomAllocator.Room import *
-from RandomRoomAllocator.Person import *
+from Room import *
+from Person import *
 from prettytable import PrettyTable
 import sqlite3
 import string
@@ -142,7 +142,7 @@ class Dojo:
 
         # Create a txt file if the filename argument is passed
         if file_name is not None:
-            my_file = open(file_name + ".txt", "w")
+            my_file = open("ExternalData/" + file_name + ".txt", "w")
             for my_room in self.all_rooms:
                 my_file.write("\n")
                 my_file.write(my_room.room_name.upper())
@@ -153,7 +153,7 @@ class Dojo:
                 my_file.write(', '.join(occupants) + "\n")
             my_file.close()
             # Open the file with the default application
-            os.startfile(file_name + ".txt")
+            os.startfile("ExternalData/" + file_name + ".txt")
 
     def print_unallocated(self, file_name):
         allocated_staff = []
@@ -193,7 +193,7 @@ class Dojo:
 
         # Create a txt file if filename argument is passed
         if file_name is not None:
-            my_file = open(file_name + ".txt", "w")
+            my_file = open("ExternalData/" + file_name + ".txt", "w")
             my_file.write("Unallocated staff members")
             my_file.write("\n-----------------------------------\n")
             my_file.write(', '.join(self.print_person_list(unallocated_staff)))
@@ -211,7 +211,7 @@ class Dojo:
             my_file.close()
 
             # Open the file with the default application
-            os.startfile(file_name + ".txt")
+            os.startfile("ExternalData/" + file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     @staticmethod
@@ -242,28 +242,28 @@ class Dojo:
         if len(new_room.occupants) < int(new_room.max_occupants):
             # Get the room object where the person was assigned previously and remove him
             prev_room_office = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
-            prev_room_living = [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)]
+            # prev_room_living = [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)]
+
             if len(prev_room_office) > 0:
                 if new_room == prev_room_office:
                     return
-                prev_room = \
-                    [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)][0]
+                prev_room = prev_room_office[0]
                 prev_room.occupants.remove(person)
                 new_room.occupants.append(person)
-            if len(prev_room_living) > 0:
-                if new_room == prev_room_living:
-                    return
-                prev_room = \
-                    [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)][0]
-                prev_room.occupants.remove(person)
-                new_room.occupants.append(person)
+            # elif len(prev_room_living) > 0:
+            #     if new_room == prev_room_living:
+            #         return
+            #     prev_room = prev_room_living[0]
+            #     prev_room.occupants.remove(person)
+            #     new_room.occupants.append(person)
             print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
         else:
             print("Destination room is fully occupied!")
             return
 
     def load_people(self):
-        for line in open("D:\dojo\person_data.txt"):
+        file = open("ExternalData/person_data.txt")
+        for line in file:
             line.strip()
             data_row = line.split()
             last_param = data_row[-1]
@@ -275,12 +275,13 @@ class Dojo:
                 wants_accommodation = "F"
                 person_type = data_row[-1]
             self.add_person(person_name, person_type, wants_accommodation)
+        file.close()
 
     def save_state(self, db_name):
         if db_name is not None:
-            conn = sqlite3.connect(db_name + ".db")
+            conn = sqlite3.connect("ExternalData/" + db_name + ".db")
         else:
-            conn = sqlite3.connect('dojo.db')
+            conn = sqlite3.connect('ExternalData/dojo.db')
         c = conn.cursor()
 
         # Create Person Table
@@ -335,7 +336,7 @@ class Dojo:
 
     def load_state(self, db_name):
         try:
-            conn = sqlite3.connect(db_name + ".db")
+            conn = sqlite3.connect("ExternalData/" + db_name + ".db")
             c = conn.cursor()
 
             # Load People

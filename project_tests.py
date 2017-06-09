@@ -1,7 +1,7 @@
 import unittest
-from RandomRoomAllocator.Dojo import Dojo
-from RandomRoomAllocator.Person import Fellow, Staff, Person
-from RandomRoomAllocator.Room import Room, LivingSpace, Office
+from Dojo import Dojo
+from Person import Fellow, Staff
+from Room import LivingSpace, Office
 
 
 class TestCreateRoom (unittest.TestCase):
@@ -170,16 +170,20 @@ class TestReallocation(unittest.TestCase):
         self.person = self.dojo.add_person("Dominic Sanders", "Fellow", "Y")
 
     def test_rellocate_office(self):
-        current_office = [office for office in self.dojo.all_rooms
-                          if isinstance(office, Office) and self.person in office.occupants][0]
+        offices = [office for office in self.dojo.all_rooms
+                          if isinstance(office, Office)]
+        current_office = [office for office in offices if self.person in office.occupants][0]
+
+        print("Current office %s" % current_office)
         self.assertTrue(current_office, msg="Person should have a current office")
         self.dojo.reallocate_person("FW1", "Black")
         new_office = [office for office in self.dojo.all_rooms
                       if isinstance(office, Office) and office.room_name == "Black"][0]
         self.assertTrue(self.person in new_office.occupants,
                         msg="Person should be an occupant of the new room")
-        self.assertFalse(self.person in current_office.occupants,
-                         msg="Person should be removed from the previous office")
+        if current_office is not new_office:
+            self.assertFalse(self.person in current_office.occupants,
+                             msg="Person should be removed from the previous office")
 
 
 class TestUnallocatedPeople(unittest.TestCase):
@@ -205,7 +209,7 @@ class TestUnallocatedPeople(unittest.TestCase):
 class TestLoadData(unittest.TestCase):
     def setUp(self):
         self.dojo = Dojo()
-        self.dojo.load_state("D:\dojo\dojo")
+        self.dojo.load_state("dojo")
 
     def test_count_num_of_entries(self):
         self.assertEqual(len(self.dojo.all_people), 5, msg="Loaded persons should be 5")

@@ -1,4 +1,4 @@
-from RandomRoomAllocator.Room import Office, LivingSpace
+from Room import Office, LivingSpace
 from random import randint
 
 
