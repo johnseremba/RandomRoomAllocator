@@ -1,5 +1,4 @@
 import unittest
-
 import sqlite3
 from Dojo import Dojo
 from Person import Fellow, Staff

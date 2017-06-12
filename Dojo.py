@@ -1,4 +1,3 @@
-from Person import *
 from prettytable import PrettyTable
 import sqlite3
 import string
@@ -6,6 +5,7 @@ import os
 import sys
 from subprocess import call
 import shlex
+from Person import *
 
 
 class Dojo:
@@ -422,4 +422,4 @@ class Dojo:
             os.startfile(shlex.quote(file_name), shell=False)
         else:
             var = "open" if sys.platform == "darwin" else "xdg-open"
-            call([var, shlex.quote(file_name)], shell=False)
+            call([var, shlex.quote(file_name)], shell=True)
