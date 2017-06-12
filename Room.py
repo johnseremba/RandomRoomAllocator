@@ -3,7 +3,6 @@ class Room:
         self.room_name = room_name
         self.max_occupants = max_occupants
         self.occupants = []
-        pass
 
 
 class Office(Room):

@@ -5,6 +5,7 @@ import string
 import os
 import sys
 import subprocess
+import shlex
 
 
 class Dojo:
@@ -418,7 +419,7 @@ class Dojo:
     @staticmethod
     def open_file(file_name):
         if sys.platform == "win32":
-            os.startfile(file_name)
+            os.startfile(shlex.quote(file_name), shell=False)
         else:
             var = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([var, file_name])
+            subprocess.call([var, shlex.quote(file_name)], shell=False)

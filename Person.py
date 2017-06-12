@@ -23,7 +23,6 @@ class Person:
 class Staff(Person):
     def __init__(self, person_name, person_id):
         super().__init__(person_name, person_id)
-        pass
 
 
 class Fellow(Person):

@@ -28,6 +28,9 @@ var/
 distribute_setup.py
 dojo_proj/
 tests/
+ExternalData/allocations_tests.txt
+ExternalData/un_allocated_tests.txt
+ExternalData/test_db.db
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
