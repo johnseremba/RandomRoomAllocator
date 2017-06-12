@@ -4,7 +4,7 @@ import sqlite3
 import string
 import os
 import sys
-import subprocess
+from subprocess import call
 import shlex
 
 
@@ -26,7 +26,7 @@ class Dojo:
     def create_room(self, room_type, *room_name):
         result = []
         room_type = room_type.lower()
-        if type(room_name) == tuple:
+        if isinstance(room_name, tuple):
             rooms_list = list(room_name)
             # Handle arguments passed from docopt. Get the arguments list
             if not isinstance(rooms_list[0], str):
@@ -419,7 +419,7 @@ class Dojo:
     @staticmethod
     def open_file(file_name):
         if sys.platform == "win32":
-            os.startfile(shlex.quote(file_name))
+            os.startfile(shlex.quote(file_name), shell=False)
         else:
             var = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([var, shlex.quote(file_name)])
+            call([var, shlex.quote(file_name)], shell=False)
