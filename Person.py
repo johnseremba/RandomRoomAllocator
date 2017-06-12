@@ -1,5 +1,5 @@
 from Room import Office, LivingSpace
-from random import randint
+from random import SystemRandom
 
 
 class Person:
@@ -13,7 +13,7 @@ class Person:
                              if isinstance(room, Office) and (len(room.occupants) < int(room.max_occupants))]
         num_offices = len(available_offices)
         if num_offices > 0:
-            assigned_office = available_offices[randint(0, num_offices) - 1]
+            assigned_office = available_offices[SystemRandom().randrange(0, num_offices) - 1]
             assigned_office.occupants.append(self)
             print("%s has been allocated the office %s" % (person_name.partition(' ')[0], assigned_office.room_name))
         else:
@@ -36,7 +36,7 @@ class Fellow(Person):
                                    if isinstance(room, LivingSpace) and (len(room.occupants) < int(room.max_occupants))]
         num_spaces = len(available_living_spaces)
         if num_spaces > 0:
-            assigned_living_space = available_living_spaces[randint(0, num_spaces) - 1]
+            assigned_living_space = available_living_spaces[SystemRandom().randrange(0, num_spaces) - 1]
             assigned_living_space.occupants.append(self)
             print("%s has been allocated the Living Space %s" %
                   (person_name.partition(' ')[0], assigned_living_space.room_name))
