@@ -113,10 +113,10 @@ class Dojo:
             return False
 
         if len(occupants) < 1:
-            print("Room %s has no occupants" % room_name)
+            print("\n Room %s has no occupants" % room_name)
             return False
         else:
-            print("Occupants in room %s" % room_name)
+            print("\n Occupants in room %s" % room_name)
             my_table = PrettyTable(['Person ID', 'Name', 'Person Type'])
             for occupant in occupants:
                 if isinstance(occupant, Staff):
@@ -131,12 +131,12 @@ class Dojo:
     def print_allocations(self, file_name):
         if len(self.all_rooms) < 1:
             print("No rooms registered")
-            return
+            return False
         else:
             for my_room in self.all_rooms:
                 print()
                 print(my_room.room_name.upper())
-                print("------------------------------")
+                print("-".ljust(31, '-'))
                 occupants = []
                 for occupant in my_room.occupants:
                     occupants.append(occupant.person_name)
@@ -148,7 +148,7 @@ class Dojo:
             for my_room in self.all_rooms:
                 my_file.write("\n")
                 my_file.write(my_room.room_name.upper())
-                my_file.write("\n------------------------------\n")
+                my_file.write("\n" + "-".ljust(31, '-') + "\n")
                 occupants = []
                 for occupant in my_room.occupants:
                     occupants.append(occupant.person_name)
@@ -180,36 +180,36 @@ class Dojo:
 
         print()
         print("Unallocated staff members")
-        print("-------------------------")
+        print("-".ljust(31, '-'))
         print(', '.join(self.print_person_list(unallocated_staff)))
 
         print()
         print("Fellows without Office Space")
-        print("-------------------------")
+        print("-".ljust(31, '-'))
         print(', '.join(self.print_person_list(unallocated_fellow_office)))
 
         print()
         print("Fellows without Living Space")
-        print("-------------------------")
+        print("-".ljust(31, '-'))
         print(', '.join(self.print_person_list(unallocated_fellow_living_space)))
 
         # Create a txt file if filename argument is passed
         if file_name is not None:
             my_file = open("ExternalData/" + file_name + ".txt", "w")
             my_file.write("Unallocated staff members")
-            my_file.write("\n-----------------------------------\n")
+            my_file.write("\n" + "-".ljust(31, '-') + "\n")
             my_file.write(', '.join(self.print_person_list(unallocated_staff)))
-            my_file.write("\n")
+            my_file.write("\n\n")
 
             my_file.write("Fellows without Office Space")
-            my_file.write("\n-----------------------------------\n")
+            my_file.write("\n" + "-".ljust(31, '-') + "\n")
             my_file.write(', '.join(self.print_person_list(unallocated_fellow_office)))
-            my_file.write("\n")
+            my_file.write("\n\n")
 
             my_file.write("Fellows without Living Space")
-            my_file.write("\n-----------------------------------\n")
+            my_file.write("\n" + "-".ljust(31, '-') + "\n")
             my_file.write(', '.join(self.print_person_list(unallocated_fellow_living_space)))
-            my_file.write("\n")
+            my_file.write("\n\n")
             my_file.close()
 
             # Open the file with the default application
@@ -224,6 +224,7 @@ class Dojo:
         return result
 
     def reallocate_person(self, person_identifier, room_name):
+
         # Get the room object based on the room name
         new_room = [room for room in self.all_rooms if room.room_name == room_name]
         if len(new_room) > 0:
@@ -244,20 +245,13 @@ class Dojo:
         if len(new_room.occupants) < int(new_room.max_occupants):
             # Get the room object where the person was assigned previously and remove him
             prev_room_office = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
-            # prev_room_living = [room for room in self.all_rooms if isinstance(room, LivingSpace) and (person in room.occupants)]
 
             if len(prev_room_office) > 0:
                 if new_room == prev_room_office:
                     return
                 prev_room = prev_room_office[0]
                 prev_room.occupants.remove(person)
-                new_room.occupants.append(person)
-            # elif len(prev_room_living) > 0:
-            #     if new_room == prev_room_living:
-            #         return
-            #     prev_room = prev_room_living[0]
-            #     prev_room.occupants.remove(person)
-            #     new_room.occupants.append(person)
+            new_room.occupants.append(person)
             print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
         else:
             print("Destination room is fully occupied!")
@@ -355,8 +349,6 @@ class Dojo:
                 elif person_type == "fellow":
                     new_person = Fellow(person_name, opt_in, person_id)
                     self.all_people.append(new_person)
-                else:
-                    print("Invalid person type")
         except sqlite3.OperationalError:
             print("Invalid database name!")
 
@@ -374,8 +366,6 @@ class Dojo:
             elif room_type == "living_space":
                 new_room = LivingSpace(room_name, max_occupants)
                 self.all_rooms.append(new_room)
-            else:
-                print("Invalid room type")
 
             # Load room occupants
             c.execute('SELECT * FROM occupant WHERE room_name=?', [room_name])
@@ -422,12 +412,13 @@ class Dojo:
                 room_type = "Living Space"
             my_table.add_row([room_name, room_type])
         print(my_table)
+        return True
 
-    # Got this function from stack overflow, for opening files across multiple platforms
+    # This static method is for opening files across multiple platforms
     @staticmethod
-    def open_file(filename):
+    def open_file(file_name):
         if sys.platform == "win32":
-            os.startfile(filename)
+            os.startfile(file_name)
         else:
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
-            subprocess.call([opener, filename])
+            var = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([var, file_name])

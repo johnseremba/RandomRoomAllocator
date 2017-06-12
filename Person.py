@@ -3,9 +3,10 @@ from random import randint
 
 
 class Person:
-    def __init__(self, person_name):
-        self.person_name = person_name
-        self.person_id = ""
+    def __init__(self, person_name, person_id):
+        new_name = person_name.split(" ")
+        self.person_name = new_name[0].capitalize() + ' ' + new_name[1].capitalize()
+        self.person_id = person_id
 
     def allocate_office(self, person_name, rooms_list):
         available_offices = [room for room in rooms_list
@@ -21,17 +22,14 @@ class Person:
 
 class Staff(Person):
     def __init__(self, person_name, person_id):
-        new_name = person_name.split(" ")
-        self.person_name = new_name[0].capitalize() + ' ' + new_name[1].capitalize()
-        self.person_id = person_id
+        super().__init__(person_name, person_id)
+        pass
 
 
 class Fellow(Person):
     def __init__(self, person_name, opt_in, person_id):
-        new_name = person_name.split(" ")
-        self.person_name = new_name[0].capitalize() + ' ' + new_name[1].capitalize()
+        super().__init__(person_name, person_id)
         self.opt_in = opt_in
-        self.person_id = person_id
 
     def allocate_living_space(self, person_name, rooms_list):
         available_living_spaces = [room for room in rooms_list

@@ -1,8 +1,9 @@
 import unittest
+
+import sqlite3
 from Dojo import Dojo
 from Person import Fellow, Staff
 from Room import LivingSpace, Office
-import sys
 
 
 class TestCreateRoom (unittest.TestCase):
@@ -28,7 +29,6 @@ class TestCreateRoom (unittest.TestCase):
         self.assertEqual(new_room_count - initial_room_count, 3, msg="Created rooms should be 3")
         self.assertEqual(len([x for x in self.dojo.all_rooms
                               if isinstance(x, Office)]), 3, msg="Created offices should be 4")
-
 
     def test_create_living_space(self):
         initial_room_count = len(self.dojo.all_rooms)
@@ -103,25 +103,23 @@ class TestAllocateRoom(unittest.TestCase):
                     break
         self.assertTrue(allocated, msg="Fellow should be assigned an office")
 
-    def test_print_occupants(self):
+    def test_print_occupants_allocations(self):
+        self.dojo.add_person("Neil Jones", "Staff")
+        self.dojo.add_person("Mike Peterson", "Fellow", "Y")
         occupied_rooms = [room for room in self.dojo.all_rooms if len(room.occupants) > 0]
         not_occupied_rooms = [room for room in self.dojo.all_rooms if len(room.occupants) < 1]
-        result = False
+
         for room in occupied_rooms:
-            result = self.dojo.print_room(room.room_name)
-            self.assertTrue(result, msg="Room should have occupants")
+            self.assertTrue(self.dojo.print_room(room.room_name), msg="Room should have occupants")
 
         for room in not_occupied_rooms:
-            result = self.dojo.print_room(room.room_name)
-            self.assertFalse(result, msg="Room should not have occupants")
+            self.assertFalse(self.dojo.print_room(room.room_name), msg="Room should not have occupants")
 
         self.assertFalse(self.dojo.print_room("Outopia"), msg="Room doesn't exist")
 
-
     def test_allocate_living_space_fellow(self):
         self.dojo.add_person("Simon Peterson", "Fellow", "Y")
-        living_space_list = [living_space for living_space in self.dojo.all_rooms
-                             if isinstance(living_space, LivingSpace)]
+        living_space_list = [living_space for living_space in self.dojo.all_rooms if isinstance(living_space, LivingSpace)]
         allocated = False
         for living_space in living_space_list:
             for occupant in living_space.occupants:
@@ -131,18 +129,11 @@ class TestAllocateRoom(unittest.TestCase):
         self.assertTrue(allocated, msg="Fellow that chose to opt in should be assigned a Living Space")
 
     def test_staff_with_living_space(self):
-        new_staff_acc = self.dojo.add_person("Dominic Walters", "Staff", "Y")
-        new_staff = self.dojo.add_person("Dominic Walters", "Staff")
+        new_staff = self.dojo.add_person("Dominic Walters", "Staff", "Y")
         self.assertTrue(new_staff, "Should ignore accommodation parameter for staff")
         living_space_list = [living_space for living_space in self.dojo.all_rooms
-                             if isinstance(living_space, LivingSpace)]
-        allocated = False
-        for living_space in living_space_list:
-            for occupant in living_space.occupants:
-                if occupant.person_name == new_staff_acc.person_name or occupant.person_name == new_staff.person_name:
-                    allocated = True
-                    break
-        self.assertFalse(allocated, msg="Staff members should never be allocated living space")
+                             if isinstance(living_space, LivingSpace) and new_staff in living_space.occupants]
+        self.assertFalse(living_space_list, msg="Staff members should never be allocated living space")
 
 
 class LoadPeopleFromFile(unittest.TestCase):
@@ -184,29 +175,38 @@ class LoadPeopleFromFile(unittest.TestCase):
                         break
             self.assertTrue(allocated, msg="Fellow with argument Y should be allocated an office")
 
+    def test_allocations(self):
+        self.dojo.print_allocations("allocations_tests")
+        my_file = open("ExternalData/allocations_tests.txt")
+        self.assertTrue(my_file, msg="Should output a .txt file")
+        my_file.close()
+        self.assertTrue(self.dojo.print_all_data(), msg="Should print all data")
+
 
 class TestReallocation(unittest.TestCase):
     def setUp(self):
         self.dojo = Dojo()
         self.dojo.create_room("office", "Blue", "Black", "Brown")
-        self.dojo.create_room("living_space", "Orange", "Yellow", "Purple")
         self.person = self.dojo.add_person("Dominic Sanders", "Fellow", "Y")
 
     def test_rellocate_office(self):
+        self.assertFalse(self.dojo.reallocate_person("FW1", "Outopia"), msg="Room doesn't exist")
+        self.assertFalse(self.dojo.reallocate_person("FW2", "Black"), msg="Person doesn't exist")
+
         offices = [office for office in self.dojo.all_rooms
                           if isinstance(office, Office)]
         current_office = [office for office in offices if self.person in office.occupants][0]
-
-        print("Current office %s" % current_office)
         self.assertTrue(current_office, msg="Person should have a current office")
         self.dojo.reallocate_person("FW1", "Black")
-        new_office = [office for office in self.dojo.all_rooms
-                      if isinstance(office, Office) and office.room_name == "Black"][0]
+        new_office = [office for office in self.dojo.all_rooms if isinstance(office, Office) and office.room_name == "Black"][0]
         self.assertTrue(self.person in new_office.occupants,
                         msg="Person should be an occupant of the new room")
+
         if current_office is not new_office:
             self.assertFalse(self.person in current_office.occupants,
                              msg="Person should be removed from the previous office")
+
+        self.assertFalse(self.dojo.reallocate_person("FW1", "Black"), msg="Can't reallocate to same office")
 
 
 class TestUnallocatedPeople(unittest.TestCase):
@@ -228,13 +228,31 @@ class TestUnallocatedPeople(unittest.TestCase):
         self.assertEqual(un_fellow, 1, "1 Fellows should not be allocated an office")
         self.assertEqual(un_fellow_living, 2, "2 Staff member should not be allocated living space")
 
+    def test_print_unallocated(self):
+        self.dojo.print_unallocated("un_allocated_tests")
+        my_file = open("ExternalData/un_allocated_tests.txt")
+        self.assertTrue(my_file, msg="Should output a .txt file")
+        my_file.close()
+
+
+class TestSaveState(unittest.TestCase):
+    def setUp(self):
+        self.dojo = Dojo()
+        self.dojo.create_room("office", "Blue", "Black", "Brown")
+        self.dojo.create_room("living_space", "Orange", "Yellow", "Purple")
+        self.dojo.load_people()
+
+    def test_save_state(self):
+        self.dojo.save_state("test_db")
+        self.assertTrue(sqlite3.connect('ExternalData/test_db.db'), msg="Can't connect to saved db")
+
 
 class TestLoadData(unittest.TestCase):
     def setUp(self):
         self.dojo = Dojo()
-        self.dojo.load_state("dojo")
 
     def test_count_num_of_entries(self):
+        self.dojo.load_state("dojo")
         self.assertEqual(len(self.dojo.all_people), 5, msg="Loaded persons should be 5")
         self.assertEqual(len(self.dojo.all_rooms), 6, msg="Should load 6 rooms")
         self.assertEqual(len([room for room in self.dojo.all_rooms if isinstance(room, Office)]), 3,
