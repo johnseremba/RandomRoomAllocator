@@ -419,7 +419,7 @@ class Dojo:
     @staticmethod
     def open_file(file_name):
         if sys.platform == "win32":
-            os.startfile(shlex.quote(file_name), shell=False)
+            os.startfile(shlex.quote(file_name), shell=True)
         else:
             var = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([var, shlex.quote(file_name)], shell=False)
