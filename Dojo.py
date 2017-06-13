@@ -4,7 +4,6 @@ import string
 import os
 import sys
 from subprocess import call
-import shlex
 from Person import *
 
 
@@ -16,8 +15,8 @@ class Dojo:
 
     # Checks whether the room_name you're trying to register is already existent
     def room_already_registered(self, room_name):
-        available = [room for room in self.all_rooms if room.room_name == room_name]
-        if len(available) > 0:
+        already_registered = [room for room in self.all_rooms if room.room_name == room_name]
+        if len(already_registered) > 0:
             return True
         else:
             return False
@@ -63,7 +62,16 @@ class Dojo:
         person_type = person_type.lower()
         person_name = person_name.strip()
 
+        # Populate a list of invalid special characters
+        invalid_chars = set(string.punctuation.replace("_", ""))
+        if any(char in invalid_chars for char in person_name):
+            print("Error! The person's name contains invalid characters. Try again!")
+            return
+
         if person_type == "staff":
+            if wants_accommodation == "Y":
+                print("Staff members can't be allocated living space!")
+
             # Generate unique ID for staff member with a prefix ST
             for j in range(len([x for x in self.all_people if isinstance(x, Staff)]), 500):
                 new_id = "ST" + str(j + 1)
@@ -219,6 +227,10 @@ class Dojo:
 
     @staticmethod
     def print_person_list(my_list):
+        if len(my_list) < 1:
+            print("No data to display")
+            return []
+
         result = []
         for person in my_list:
             result += [person.person_name]
@@ -234,10 +246,13 @@ class Dojo:
             print("The room {0} does not exist in the Dojo.".format(room_name))
             return
 
-        # Get the person object based on the person name
+        # Get the person object based on the person identifier
         person = [person for person in self.all_people if person.person_id == person_identifier]
         if len(person) > 0:
             person = [person for person in self.all_people if person.person_id == person_identifier][0]
+            if isinstance(person, Staff) and isinstance(new_room, LivingSpace):
+                print("A staff member can't be allocated a living space!")
+                return
         else:
             print("Person {0} does not exist in the Dojo.".format(person_identifier))
             return
@@ -245,15 +260,23 @@ class Dojo:
         # Allocate person to the new room if there is space
         if len(new_room.occupants) < int(new_room.max_occupants):
             # Get the room object where the person was assigned previously and remove him
-            prev_room_office = [room for room in self.all_rooms if isinstance(room, Office) and (person in room.occupants)]
-
-            if len(prev_room_office) > 0:
-                if new_room == prev_room_office:
+            prev_room = [room for room in self.all_rooms if isinstance(room, type(new_room)) and person in room.occupants]
+            if len(prev_room) > 0:
+                if type(new_room) != type(prev_room[0]):
+                    print("{0} can't be reallocated from {1} to {2}. Try again!".
+                          format(person.person_name, prev_room.__class__.__name__, new_room.__class__.__name__))
                     return
-                prev_room = prev_room_office[0]
+                if new_room == prev_room[0]:
+                    print("{0} is already an occupant of {1} {2}".
+                          format(person.person_name, new_room.__class__.__name__, room_name))
+                    return
+                prev_room = prev_room[0]
                 prev_room.occupants.remove(person)
-            new_room.occupants.append(person)
-            print("%s has been successfully allocated to %s" % (person.person_name, new_room.room_name))
+                new_room.occupants.append(person)
+                print("%s has been successfully allocated to %s %s" %
+                      (person.person_name, new_room.__class__.__name__, new_room.room_name))
+            else:
+                print("%s doesn't belong to any %s yet." % (person.person_name, new_room.__class__.__name__))
         else:
             print("Destination room is fully occupied!")
             return
@@ -279,6 +302,7 @@ class Dojo:
             conn = sqlite3.connect("ExternalData/" + db_name + ".db")
         else:
             conn = sqlite3.connect('ExternalData/dojo.db')
+            print("Data saved with in the default database 'dojo'")
         c = conn.cursor()
 
         # Create Person Table
@@ -351,7 +375,8 @@ class Dojo:
                     new_person = Fellow(person_name, opt_in, person_id)
                     self.all_people.append(new_person)
         except sqlite3.OperationalError:
-            print("Invalid database name!")
+            print("Database %s.db doesn't exist!" % db_name)
+            return
 
         # Load Rooms
         c.execute('''SELECT * FROM room''')
@@ -419,7 +444,7 @@ class Dojo:
     @staticmethod
     def open_file(file_name):
         if sys.platform == "win32":
-            os.startfile(shlex.quote(file_name), shell=False)
+            os.startfile(file_name)
         else:
             var = "open" if sys.platform == "darwin" else "xdg-open"
-            call([var, shlex.quote(file_name)], shell=True)
+            call([var, file_name])

@@ -1,5 +1,7 @@
 class Room:
     def __init__(self, room_name, max_occupants):
+        if type(self) == Room:
+            raise NotImplementedError("You can't directly instantiate a Room object")
         self.room_name = room_name
         self.max_occupants = max_occupants
         self.occupants = []
