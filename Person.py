@@ -4,7 +4,7 @@ from Room import Office, LivingSpace
 
 class Person:
     def __init__(self, person_name, person_id):
-        if type(self) == Person:
+        if isinstance(self, Person):
             raise NotImplementedError("You can't directly instantiate a Person object")
 
         new_name = person_name.split(" ")

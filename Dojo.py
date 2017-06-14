@@ -262,7 +262,7 @@ class Dojo:
             # Get the room object where the person was assigned previously and remove him
             prev_room = [room for room in self.all_rooms if isinstance(room, type(new_room)) and person in room.occupants]
             if len(prev_room) > 0:
-                if type(new_room) != type(prev_room[0]):
+                if not isinstance(new_room, type(prev_room[0]):
                     print("{0} can't be reallocated from {1} to {2}. Try again!".
                           format(person.person_name, prev_room.__class__.__name__, new_room.__class__.__name__))
                     return
@@ -310,7 +310,7 @@ class Dojo:
         (person_id TEXT PRIMARY KEY NOT NULL,
         person_name TEXT NOT NULL,
         person_type TEXT NOT NULL,
-        opt_int INT     
+        opt_int INT
         )''')
 
         # Create room Table
@@ -323,7 +323,7 @@ class Dojo:
         # Create Occupant Table
         c.execute('''CREATE TABLE IF NOT EXISTS occupant
                 (person_id TEXT NOT NULL,
-                room_name TEXT NOT NULL   
+                room_name TEXT NOT NULL
                 )''')
 
         # Save Persons Data
