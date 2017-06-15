@@ -1,10 +1,12 @@
+from abc import ABCMeta
 from random import SystemRandom
-from Room import Office, LivingSpace
+
+from dojo_classes.Room import Office, LivingSpace
 
 
-class Person:
+class Person(metaclass=ABCMeta):
     def __init__(self, person_name, person_id):
-        if isinstance(self, Person):
+        if type(self) == Person:
             raise NotImplementedError("You can't directly instantiate a Person object")
 
         new_name = person_name.split(" ")

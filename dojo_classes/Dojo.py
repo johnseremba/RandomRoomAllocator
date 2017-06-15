@@ -1,10 +1,12 @@
-from prettytable import PrettyTable
+import os
 import sqlite3
 import string
-import os
 import sys
 from subprocess import call
-from Person import *
+
+from prettytable import PrettyTable
+
+from dojo_classes.Person import *
 
 
 class Dojo:

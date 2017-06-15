@@ -1,8 +1,9 @@
-import unittest
 import sqlite3
-from Dojo import Dojo
-from Person import Fellow, Staff
-from Room import LivingSpace, Office
+import unittest
+
+from dojo_classes.Dojo import Dojo
+from dojo_classes.Person import Fellow, Staff
+from dojo_classes.Room import LivingSpace, Office
 
 
 class TestCreateRoom (unittest.TestCase):

@@ -21,13 +21,13 @@ lib64/
 parts/
 sdist/
 var/
+ExternalData/
 *.egg-info/
 .installed.cfg
 *.egg
 .venv/
 distribute_setup.py
 dojo_proj/
-tests/
 ExternalData/allocations_tests.txt
 ExternalData/un_allocated_tests.txt
 ExternalData/test_db.db

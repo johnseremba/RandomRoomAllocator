@@ -18,10 +18,12 @@ Options:
     -h, --help  Show this screen and exit.
 """
 
-import sys
 import cmd
+import sys
+
 from docopt import docopt, DocoptExit
-from Dojo import Dojo
+
+from dojo_classes.Dojo import Dojo
 
 dojo = Dojo()
 
