@@ -109,7 +109,7 @@ class Dojo:
             self.all_people.append(new_person)
             return new_person
         else:
-            print("Invalid person type")
+            print("Invalid person type") 
         return
 
     def print_room(self, room_name):
@@ -262,7 +262,7 @@ class Dojo:
             # Get the room object where the person was assigned previously and remove him
             prev_room = [room for room in self.all_rooms if isinstance(room, type(new_room)) and person in room.occupants]
             if len(prev_room) > 0:
-                if not isinstance(new_room, type(prev_room[0]):
+                if not isinstance(new_room, type(prev_room[0])):
                     print("{0} can't be reallocated from {1} to {2}. Try again!".
                           format(person.person_name, prev_room.__class__.__name__, new_room.__class__.__name__))
                     return
