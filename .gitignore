@@ -27,8 +27,6 @@ var/
 .venv/
 distribute_setup.py
 dojo_proj/
-ExternalData/allocations_tests.txt
-ExternalData/un_allocated_tests.txt
 ExternalData/test_db.db
 
 # PyInstaller
