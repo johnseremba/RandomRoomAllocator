@@ -16,7 +16,7 @@ class TestReallocation(unittest.TestCase):
                         msg="Person should be an occupant of the new room, and removed from the previous room")
 
     def test_reallocate_same_office(self):
-        self.dojo.create_room("office", "Blue")[0]
+        self.dojo.create_room("office", "Blue")
         self.dojo.add_person("Johnson Brown", "Staff")
         self.assertFalse(self.dojo.reallocate_person("ST1", "Blue"), msg="Can't reallocate person to same office")
 

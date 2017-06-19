@@ -9,7 +9,7 @@ class DojoDb:
 
     def save_state(self, db_name):
         if db_name is not None:
-            conn = sqlite3.connect("../ExternalData/" + db_name + ".db")
+            conn = sqlite3.connect("ExternalData/" + db_name + ".db")
         else:
             conn = sqlite3.connect('ExternalData/dojo.db')
             print("Data saved with in the default database 'dojo'")
@@ -67,7 +67,7 @@ class DojoDb:
 
     def load_state(self, db_name):
         try:
-            conn = sqlite3.connect("../ExternalData/" + db_name + ".db")
+            conn = sqlite3.connect("ExternalData/" + db_name + ".db")
             c = conn.cursor()
 
             # Load People

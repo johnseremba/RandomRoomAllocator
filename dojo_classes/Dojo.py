@@ -138,7 +138,7 @@ class Dojo:
         else:
             return None
 
-    def print_allocations(self, file_name):
+    def print_allocations(self, file_name=None):
         if len(self.all_rooms) < 1:
             print("No rooms registered")
             return False
@@ -153,7 +153,7 @@ class Dojo:
                 print(', '.join(occupants))
 
         # Create a txt file if the filename argument is passed
-        if file_name is not None:
+        if file_name:
             my_file = open("ExternalData/" + file_name + ".txt", "w")
             for my_room in self.all_rooms:
                 my_file.write("\n")
@@ -201,7 +201,7 @@ class Dojo:
 
         # Create a txt file if filename argument is passed
         if file_name:
-            my_file = open("../ExternalData/" + file_name + ".txt", "w")
+            my_file = open("ExternalData/" + file_name + ".txt", "w")
             my_file.write("Unallocated staff members")
             my_file.write("\n" + "-".ljust(31, '-') + "\n")
             my_file.write(', '.join(self.print_person_list(unallocated_staff)))
@@ -219,7 +219,7 @@ class Dojo:
             my_file.close()
 
             # Open the file with the default application
-            self.open_file("../ExternalData/" + file_name + ".txt")
+            self.open_file("ExternalData/" + file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     def get_person_by_id(self, person_identifier):
@@ -278,7 +278,7 @@ class Dojo:
             print("%s doesn't belong to any %s yet." % (person.person_name, new_room.__class__.__name__))
 
     def load_people(self):
-        file = open("../ExternalData/person_data.txt")
+        file = open("ExternalData/person_data.txt")
         for line in file:
             line.strip()
             data_row = line.split()
