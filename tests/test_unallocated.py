@@ -21,6 +21,6 @@ class TestUnallocatedPeople(unittest.TestCase):
 
     def test_print_unallocated(self):
         self.dojo.print_unallocated("un_allocated_tests")
-        my_file = open("../ExternalData/un_allocated_tests.txt")
+        my_file = open("ExternalData/un_allocated_tests.txt")
         self.assertTrue(my_file, msg="Should output a .txt file")
         my_file.close()

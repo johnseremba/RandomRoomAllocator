@@ -60,7 +60,7 @@ class TestAllocateRoom(unittest.TestCase):
 
     def test_allocations(self):
         self.dojo.print_allocations("allocations_tests")
-        my_file = open("../ExternalData/allocations_tests.txt")
+        my_file = open("ExternalData/allocations_tests.txt")
         self.assertTrue(my_file, msg="Should output a .txt file")
         my_file.close()
         self.assertTrue(self.dojo.print_all_data(), msg="Should print all data")

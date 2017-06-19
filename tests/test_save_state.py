@@ -11,4 +11,4 @@ class TestSaveState(unittest.TestCase):
 
     def test_save_state(self):
         self.dojo.save_state("test_db")
-        self.assertTrue(sqlite3.connect('../ExternalData/test_db.db'), msg="Can't connect to saved db")
+        self.assertTrue(sqlite3.connect('ExternalData/test_db.db'), msg="Can't connect to saved db")

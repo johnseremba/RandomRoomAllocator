@@ -1,0 +1,6 @@
+[run]
+source=
+    tests
+    dojo_classes
+omit=
+    ~/Envs/dojo_project
