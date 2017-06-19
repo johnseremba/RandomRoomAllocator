@@ -19,8 +19,8 @@ class TestUnallocatedPeople(unittest.TestCase):
         self.assertEqual(num_unallocated_fellows, 1, "1 Fellow should not be allocated an office")
         self.assertEqual(num_unallocated_living, 1, "1 Fellow should not be allocated living space")
 
-    def test_print_unallocated(self):
-        self.dojo.print_unallocated("un_allocated_tests")
-        my_file = open("ExternalData/un_allocated_tests.txt")
-        self.assertTrue(my_file, msg="Should output a .txt file")
-        my_file.close()
+    # def test_print_unallocated(self):
+    #     self.dojo.print_unallocated("un_allocated_tests")
+    #     my_file = open("ExternalData/un_allocated_tests.txt")
+    #     self.assertTrue(my_file, msg="Should output a .txt file")
+    #     my_file.close()
