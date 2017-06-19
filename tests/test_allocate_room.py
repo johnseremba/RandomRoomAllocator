@@ -59,6 +59,8 @@ class TestAllocateRoom(unittest.TestCase):
         self.assertFalse(self.dojo.print_room("Blue"), msg="Room should not have occupants")
 
     def test_allocations(self):
+        self.dojo.create_room("office", "Blue")
+        self.dojo.add_person("Neil Jones", "Staff")
         self.dojo.print_allocations("allocations_tests")
         my_file = open("ExternalData/allocations_tests.txt")
         self.assertTrue(my_file, msg="Should output a .txt file")
