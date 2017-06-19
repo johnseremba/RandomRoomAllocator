@@ -139,7 +139,7 @@ class Dojo:
             return None
 
     def print_allocations(self, file_name=None):
-        if self.all_rooms:
+        if not self.all_rooms:
             print("No rooms registered")
             return False
         else:
@@ -340,7 +340,7 @@ class Dojo:
 
     @staticmethod
     def print_person_list(my_list):
-        if my_list:
+        if not my_list:
             print("No data to display")
             return []
 
