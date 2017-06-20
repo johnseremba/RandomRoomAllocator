@@ -154,7 +154,7 @@ class Dojo:
 
         # Create a txt file if the filename argument is passed
         if file_name:
-            my_file = open("ExternalData/" + file_name + ".txt", "w")
+            my_file = open(file_name + ".txt", "w")
             for my_room in self.all_rooms:
                 my_file.write("\n")
                 my_file.write(my_room.room_name.upper())
@@ -165,7 +165,7 @@ class Dojo:
                 my_file.write(', '.join(occupants) + "\n")
             my_file.close()
             # Open the file with the default application
-            self.open_file("ExternalData/" + file_name + ".txt")
+            self.open_file(file_name + ".txt")
 
     def print_unallocated(self, file_name=None):
         allocated_staff = []
