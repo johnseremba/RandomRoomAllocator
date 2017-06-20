@@ -1,4 +1,5 @@
 import unittest
+import os
 from dojo_classes.Dojo import Dojo
 
 
@@ -21,7 +22,7 @@ class TestUnallocatedPeople(unittest.TestCase):
 
     def test_print_unallocated(self):  # pragma: no cover
         self.dojo.print_unallocated("un_allocated_tests")
-        my_file = open("ExternalData/un_allocated_tests.txt").read()
+        my_file = open(os.path.join(os.path.dirname(__file__), "ExternalData/un_allocated_tests.txt")).read()
         self.assertTrue("Jackson Brown" in my_file, msg="Jackson Brown shouldn't be allocated")
         self.assertTrue("Jennifer Hopkins" in my_file, msg="Jennifer Hopkins shouldn't be allocated")
         self.assertTrue("Dominic Sanders" in my_file, msg="Dominic Sanders shouldn't be allocated")
