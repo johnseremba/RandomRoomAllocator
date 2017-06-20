@@ -65,6 +65,6 @@ class TestAllocateRoom(unittest.TestCase):
         print("Into allocations tests")
         self.dojo.print_allocations("allocations_tests")
         print("Out of allocations tests")
-        my_file = open(os.path.join(os.path.dirname(__file__), "allocations_tests.txt")).read()
+        my_file = open(os.path.join(os.path.dirname(__file__), "ExternalData/allocations_tests.txt")).read()
         self.assertTrue("BLUE" in my_file, msg="The room Blue should be printed to the file")
         self.assertTrue("Neil Jones" in my_file, msg="Neil Jones should be printed to the file")
