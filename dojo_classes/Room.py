@@ -3,7 +3,7 @@ from abc import ABCMeta
 
 class Room(metaclass=ABCMeta):
     def __init__(self, room_name):
-        if isinstance(self, Room):
+        if isinstance(self, Room) and not (isinstance(self, Office) or isinstance(self, LivingSpace)):
             raise NotImplementedError("You can't directly instantiate a Room object")
         self.room_name = room_name
         self.occupants = []

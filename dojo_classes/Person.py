@@ -6,7 +6,7 @@ from dojo_classes.Room import Office, LivingSpace
 
 class Person(metaclass=ABCMeta):
     def __init__(self, person_name, person_id):
-        if isinstance(self, Person):
+        if isinstance(self, Person) and not (isinstance(self, Staff) or isinstance(self, Fellow)):
             raise NotImplementedError("You can't directly instantiate a Person object")
 
         new_name = person_name.split(" ")
