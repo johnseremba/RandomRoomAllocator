@@ -164,8 +164,6 @@ class Dojo:
                     occupants.append(occupant.person_name)
                 my_file.write(', '.join(occupants) + "\n")
             my_file.close()
-            # Open the file with the default application
-            # self.open_file("ExternalData/" + file_name + ".txt")
 
     def print_unallocated(self, file_name=None):
         allocated_staff = []
@@ -218,8 +216,6 @@ class Dojo:
             my_file.write("\n\n")
             my_file.close()
 
-            # Open the file with the default application
-            # self.open_file("ExternalData/" + file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     def get_person_by_id(self, person_identifier):
