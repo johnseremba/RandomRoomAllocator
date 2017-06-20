@@ -58,7 +58,7 @@ class TestAllocateRoom(unittest.TestCase):
         self.dojo.create_room("office", "Blue")
         self.assertFalse(self.dojo.print_room("Blue"), msg="Room should not have occupants")
 
-    def test_allocations(self):
+    def test_allocations(self):  # pragma: no cover
         self.dojo.create_room("office", "Blue")
         self.dojo.add_person("Neil Jones", "Staff")
         self.dojo.print_allocations("allocations_tests")

@@ -103,7 +103,7 @@ class Dojo:
             self.all_people.append(new_person)
             return new_person
         else:
-            print("Invalid person type") 
+            print("Invalid person type")
         return None
 
     def print_room(self, room_name):
@@ -297,7 +297,7 @@ class Dojo:
         for room in self.all_rooms:
             self.print_room(room.room_name)
 
-    def print_all_data(self):
+    def print_all_data(self):  # pragma: no cover
         print("Dojo Data")
         my_table = PrettyTable(['Person ID', 'Name', 'Office', 'Living Space'])
         for person in self.all_people:
