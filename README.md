@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/07b7e9960d3e4a7ca2bb50cd8106883d)](https://www.codacy.com/app/SerryJohns/RandomRoomAllocator?utm_source=github.com&utm_medium=referral&utm_content=SerryJohns/RandomRoomAllocator&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/SerryJohns/RandomRoomAllocator.svg?branch=master)](https://travis-ci.org/SerryJohns/RandomRoomAllocator)
 [![Coverage Status](https://coveralls.io/repos/github/SerryJohns/RandomRoomAllocator/badge.svg?branch=master)](https://coveralls.io/github/SerryJohns/RandomRoomAllocator?branch=master)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
