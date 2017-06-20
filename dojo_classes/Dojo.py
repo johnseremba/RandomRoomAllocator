@@ -27,7 +27,7 @@ class Dojo:
         if isinstance(room_name, tuple):
             rooms_list = list(room_name)
             # Handle arguments passed from docopt. Get the arguments list
-            if not isinstance(rooms_list[0], str):
+            if not isinstance(rooms_list[0], str):  # pragma: no cover
                 rooms_list = rooms_list[0]
 
         for room in rooms_list:
@@ -219,7 +219,7 @@ class Dojo:
             my_file.close()
 
             # Open the file with the default application
-            self.open_file("ExternalData/" + file_name + ".txt")
+            # self.open_file("ExternalData/" + file_name + ".txt")
         return [len(unallocated_staff), len(unallocated_fellow_office), len(unallocated_fellow_living_space)]
 
     def get_person_by_id(self, person_identifier):
