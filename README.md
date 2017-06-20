@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/SerryJohns/RandomRoomAllocator.svg?branch=master)](https://travis-ci.org/SerryJohns/RandomRoomAllocator)
+[![Coverage Status](https://coveralls.io/repos/github/SerryJohns/RandomRoomAllocator/badge.svg?branch=master)](https://coveralls.io/github/SerryJohns/RandomRoomAllocator?branch=master)
+[![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 # RandomRoomAllocator
 Implementation of a system that randomises allocation of rooms to new Andela Fellows and Staff Members at the Dojo.
 
@@ -106,14 +111,14 @@ Enables you to run tests on the different parts of the application to ensure tha
 Open the terminal and type in the command below to run tests on the program.
 Please remember to use the correct python installation on your system. Replace with ```python3``` if need be.
 ```
-python3 -m unittest project_tests.py
+python3 -m unittest discover tests
 ```
 
 ### Gather test coverage data
 Determine the percentage of code tested.
 
 ```
-coverage run project_tests.py
+coverage run -m unittest discover -s tests
 ```
 ### Print / Output test coverage report
 
