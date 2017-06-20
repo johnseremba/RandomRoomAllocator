@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/SerryJohns/RandomRoomAllocator.svg?branch=master)](https://travis-ci.org/SerryJohns/RandomRoomAllocator)
 [![Coverage Status](https://coveralls.io/repos/github/SerryJohns/RandomRoomAllocator/badge.svg?branch=master)](https://coveralls.io/github/SerryJohns/RandomRoomAllocator?branch=master)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # RandomRoomAllocator
 Implementation of a system that randomises allocation of rooms to new Andela Fellows and Staff Members at the Dojo.
