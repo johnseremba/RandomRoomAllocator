@@ -1,7 +1,4 @@
-import os
 import string
-import sys
-from subprocess import call
 from prettytable import PrettyTable
 from dojo_classes.DojoDb import DojoDb
 from dojo_classes.Person import *
@@ -344,15 +341,6 @@ class Dojo:
         for person in my_list:
             result += [person.person_name]
         return result
-
-    # This function is for opening files across multiple platforms
-    @staticmethod
-    def open_file(file_name):
-        if sys.platform == "win32":
-            os.startfile(file_name)
-        else:
-            var = "open" if sys.platform == "darwin" else "xdg-open"
-            call([var, file_name])
 
     @staticmethod
     def invalid_chars(my_string):
