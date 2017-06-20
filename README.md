@@ -111,14 +111,14 @@ Enables you to run tests on the different parts of the application to ensure tha
 Open the terminal and type in the command below to run tests on the program.
 Please remember to use the correct python installation on your system. Replace with ```python3``` if need be.
 ```
-python3 -m unittest project_tests.py
+python3 -m unittest discover tests
 ```
 
 ### Gather test coverage data
 Determine the percentage of code tested.
 
 ```
-coverage run project_tests.py
+coverage run -m unittest discover -s tests
 ```
 ### Print / Output test coverage report
 
