@@ -7,12 +7,8 @@ class DojoDb:
     def __init__(self, dojo):
         self.dojo_obj = dojo
 
-    def save_state(self, db_name):
-        if db_name is not None:
-            conn = sqlite3.connect("ExternalData/" + db_name + ".db")
-        else:
-            conn = sqlite3.connect('ExternalData/dojo.db')
-            print("Data saved with in the default database 'dojo'")
+    def save_state(self, db_name="dojo"):
+        conn = sqlite3.connect("ExternalData/" + db_name + ".db")
         c = conn.cursor()
 
         # Create Person Table
@@ -62,7 +58,7 @@ class DojoDb:
                 c.execute('INSERT INTO occupant VALUES (?, ?)', data_list)
 
         conn.commit()
-        print("Data saved successfully")
+        print("Data saved successfully in %s.db" % db_name)
         conn.close()
 
     def load_state(self, db_name):

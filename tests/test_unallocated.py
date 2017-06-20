@@ -7,7 +7,7 @@ class TestUnallocatedPeople(unittest.TestCase):
         self.dojo = Dojo()
         self.dojo.add_person("Dominic Sanders", "Fellow", "Y")
         self.dojo.add_person("Jennifer Hopkins", "Staff")
-        self.dojo.add_person("Jennifer Hopkins", "Staff")
+        self.dojo.add_person("Jackson Brown", "Staff")
 
     def test_unallocated(self):
         results = self.dojo.print_unallocated()
@@ -21,6 +21,7 @@ class TestUnallocatedPeople(unittest.TestCase):
 
     def test_print_unallocated(self):
         self.dojo.print_unallocated("un_allocated_tests")
-        my_file = open("ExternalData/un_allocated_tests.txt")
-        self.assertTrue(my_file, msg="Should output a .txt file")
-        my_file.close()
+        my_file = open("ExternalData/un_allocated_tests.txt").read()
+        self.assertTrue("Jackson Brown" in my_file, msg="Jackson Brown shouldn't be allocated")
+        self.assertTrue("Jennifer Hopkins" in my_file, msg="Jennifer Hopkins shouldn't be allocated")
+        self.assertTrue("Dominic Sanders" in my_file, msg="Dominic Sanders shouldn't be allocated")

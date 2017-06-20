@@ -62,7 +62,7 @@ class TestAllocateRoom(unittest.TestCase):
         self.dojo.create_room("office", "Blue")
         self.dojo.add_person("Neil Jones", "Staff")
         self.dojo.print_allocations("allocations_tests")
-        my_file = open("ExternalData/allocations_tests.txt")
-        self.assertTrue(my_file, msg="Should output a .txt file")
-        my_file.close()
-        self.assertTrue(self.dojo.print_all_data(), msg="Should print all data")
+
+        my_file = open("ExternalData/allocations_tests.txt").read()
+        self.assertTrue("BLUE" in my_file, msg="The room Blue should be printed to the file")
+        self.assertTrue("Neil Jones" in my_file, msg="Neil Jones should be printed to the file")

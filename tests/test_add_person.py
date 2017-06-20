@@ -27,3 +27,7 @@ class TestAddPerson(unittest.TestCase):
     def test_add_person_invalid_person_type(self):
         new_person = self.dojo.add_person("Sanders Dominic", "some_person_type")
         self.assertTrue(new_person is None, "Person type should either be Fellow or Staff")
+
+    def test_add_person_invalid_chars(self):
+        new_person = self.dojo.add_person("John P*()+=", "Staff")
+        self.assertTrue(new_person is None, "Shouldn't create a person with invalid chars in the name")

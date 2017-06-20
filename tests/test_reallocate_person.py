@@ -23,7 +23,8 @@ class TestReallocation(unittest.TestCase):
     def test_no_current_office(self):
         self.dojo.add_person("Dominic Sanders", "Fellow")
         self.dojo.create_room("office", "Black")
-        self.assertFalse(self.dojo.reallocate_person("FW1", "Black"), msg="Can't reallocate person without current office")
+        self.assertFalse(self.dojo.reallocate_person("FW1", "Black"),
+                         msg="Can't reallocate person without current office")
 
     def test_reallocate_nonexistent_office(self):
         self.assertFalse(self.dojo.reallocate_person("FW1", "Outopia"), msg="Can't reallocate to nonexistent office")
