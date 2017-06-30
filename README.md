@@ -21,6 +21,7 @@ Implementation of a system that randomises allocation of rooms to new Andela Fel
 $ git clone https://github.com/SerryJohns/RandomRoomAllocator.git
 $ cd your-dir
 $ rm -rf .git
+$ pip install -r requirements.txt
 ``` 
 ## Commands, their usage and examples
 
