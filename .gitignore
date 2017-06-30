@@ -15,6 +15,7 @@ dist/
 downloads/
 eggs/
 .eggs/
+.idea/
 lib/
 lib64/
 parts/
@@ -23,6 +24,10 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+.venv/
+distribute_setup.py
+dojo_proj/
+ExternalData/test_db.db
 
 .idea/
 .venv/
